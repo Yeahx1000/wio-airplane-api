@@ -1,2 +1,7 @@
-export { default as airportRoutes } from './airport.routes.js';
+import { FastifyInstance } from 'fastify';
+import { registerAirportRoutes } from './airport.routes.js';
+
+export const registerRoutes = (fastify: FastifyInstance) => {
+  registerAirportRoutes(fastify);
+};
 

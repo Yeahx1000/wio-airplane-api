@@ -1,6 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 
-export const rateLimit = (req: Request, res: Response, next: NextFunction) => {
-  next();
+export const rateLimit = async (req: FastifyRequest, res: FastifyReply) => {
 };
 

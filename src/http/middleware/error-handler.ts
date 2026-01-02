@@ -1,10 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
+import { FastifyError, FastifyRequest, FastifyReply } from 'fastify';
 
 export const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
+  err: FastifyError,
+  req: FastifyRequest,
+  res: FastifyReply
 ) => {
 };
 

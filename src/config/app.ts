@@ -1,6 +1,5 @@
-import express from 'express';
+import { FastifyInstance } from 'fastify';
 
-export const configureApp = (app: express.Application) => {
-    app.use(express.json());
+export const configureApp = (app: FastifyInstance) => {
 };
 

@@ -1,6 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 
-export const validateRequest = (req: Request, res: Response, next: NextFunction) => {
-  next();
+export const validateRequest = async (req: FastifyRequest, res: FastifyReply) => {
 };
 

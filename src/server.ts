@@ -1,15 +1,20 @@
-import express from 'express';
+import Fastify from 'fastify';
 import { configureApp } from './config/app.js';
-import { airportRoutes } from './http/routes/index.js';
+import { registerRoutes } from './http/routes/index.js';
 
-const app = express();
+const fastify = Fastify({
+  logger: true,
+});
 
-configureApp(app);
+configureApp(fastify);
+registerRoutes(fastify);
 
-app.use('/api/airports', airportRoutes);
+const PORT = parseInt(process.env.PORT || '3000', 10);
+const HOST = process.env.HOST || '0.0.0.0';
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+fastify.listen({ port: PORT, host: HOST }, (err) => {
+  if (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
 });

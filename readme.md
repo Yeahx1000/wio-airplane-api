@@ -3,7 +3,7 @@ An API that returns airports within a given radius of a specific coordinate.
 
 ## Tech Stack
 - Node.js (Typescript)
-- Express
+- Fastify
 - AWS
   - S3 (store CSV)
   - RDS (Postgresql & PostGIS)
