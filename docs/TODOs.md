@@ -1,0 +1,22 @@
+# TODOs
+
+- [ ]  Define environment configuration
+- [ ]  Initialize database layer
+- [ ]  Design airport schema
+- [ ]  Build CSV ingestion pipeline
+- [ ]  Add spatial indexes
+- [ ]  Implement airport repository
+- [ ]  Create cache layer
+- [ ]  Implement airport service
+- [ ]  Implement distance computation
+- [ ]  Implement cross-country closest logic
+- [ ]  Implement routing domain logic
+- [ ]  Implement route service
+- [ ]  Add request validation
+- [ ]  Define API routes and controllers
+- [ ]  Add rate limiting and guardrails
+- [ ]  Implement centralized error handling
+- [ ]  Add logging and tracing
+- [ ]  Add metrics and monitoring
+- [ ]  Document API behavior
+- [ ]  Verify performance assumptions
