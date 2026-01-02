@@ -8,4 +8,5 @@ yarn-debug.log*
 yarn-error.log*
 .cursor
 
-
+# example env file
+!.env.example

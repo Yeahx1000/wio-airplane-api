@@ -16,7 +16,7 @@ An API that returns airports within a given radius of a specific coordinate.
 - Swagger (API documentation)
 
 ## Installation
-To get started, you'll need to install the following dependencies:
+To get started, you'll need to install the dependencies:
 
 ```bash
 npm install

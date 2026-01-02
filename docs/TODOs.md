@@ -1,22 +1,50 @@
 # TODOs
 
-- [ ]  Define environment configuration
-- [ ]  Initialize database layer
-- [ ]  Design airport schema
-- [ ]  Build CSV ingestion pipeline
-- [ ]  Add spatial indexes
-- [ ]  Implement airport repository
-- [ ]  Create cache layer
-- [ ]  Implement airport service
-- [ ]  Implement distance computation
-- [ ]  Implement cross-country closest logic
-- [ ]  Implement routing domain logic
-- [ ]  Implement route service
-- [ ]  Add request validation
-- [ ]  Define API routes and controllers
-- [ ]  Add rate limiting and guardrails
-- [ ]  Implement centralized error handling
-- [ ]  Add logging and tracing
-- [ ]  Add metrics and monitoring
-- [ ]  Document API behavior
-- [ ]  Verify performance assumptions
+Mapped out TODOs prior to attempting implementation. 
+
+Will be working through the following steps in order (theoretically)
+
+## Phase 1: Foundation & Database
+Why? getting a foundation set before doing anything else
+- [ ] 1.1 - Define environment configuration (env.ts with validation)
+- [ ] 1.2 - Install core dependencies (pg, postgis, zod, @fastify/swagger, etc.)
+- [ ] 1.3 - Design airport database schema (PostGIS geometry column, indexes)
+- [ ] 1.4 - connect db (Postgres/PostGIS client setup)
+- [ ] 1.5 - connect CSV to db (parse CSV → insert into Postgres with PostGIS)
+- [ ] 1.6 - Add spatial indexes (GIST index on geometry column for performance)
+- [ ] 1.7 - Create verify-dataset script (validate data integrity after ingestion)
+
+## Phase 2: Core Logic
+Why? For figuring out how to calculate distances, etc.
+- [ ] 2.1 - Haversine distance calculation (domain/geo/haversine.ts)
+- [ ] 2.2 - Unit conversion helpers (miles ↔ km)
+- [ ] 2.3 - BFS routing algorithm (domain/routing/bfs.ts - 500mi constraint)
+- [ ] 2.4 - path builder (domain/routing/path-builder.ts - leg distances)
+
+## Phase 3: Repository & Service Layer
+Why? Seperation of concerns with database queries
+- [ ] 3.1 - airport repository (PostGIS queries: radius, distance, lookup by country)
+- [ ] 3.2 - Create cache (Redis client setup and key management)
+- [ ] 3.3 - Airport service (handle repository + cache + business logic)
+- [ ] 3.4 - Route service (handle routing domain + repository)
+
+## Phase 4: API Layer
+Why? plugging things together.
+- [ ] 4.1 - Add request validation schemas (Zod schemas for all 5 endpoints)
+- [ ] 4.2 - Implement airport controller (handle all 5 endpoint requests)
+- [ ] 4.3 - Define API routes (Fastify route definitions with validation)
+- [ ] 4.4 - Add Swagger/OpenAPI documentation
+
+## Phase 5: Infra & Observability (optional)
+Why? for monitoring, logging, etc.
+- [ ] 5.1 - Implement centralized error handling (Fastify error handler)
+- [ ] 5.2 - Add request logging middleware (with request IDs)
+- [ ] 5.3 - Add rate limiting middleware (protect against spikes)
+- [ ] 5.4 - Add metrics and monitoring hooks (request/DB/cache metrics)
+- [ ] 5.5 - Add request tracing setup
+
+## Phase 6: Test & Documentation
+Why? self explanatory
+- [ ] 6.1 - Document API endpoints (Swagger + README)
+- [ ] 6.2 - Verify performance (test 500 req/s capacity)
+- [ ] 6.3 - General Testing (integration tests?)
