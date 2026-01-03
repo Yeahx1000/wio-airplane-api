@@ -24,8 +24,8 @@ Prior - Phase 0: Setup
 Why? getting a foundation set before doing anything else
 - [X] 1.1 - Define environment configuration (env.ts with validation)
 - [X] 1.2 - Install core dependencies (pg, postgis, zod, @fastify/swagger, etc.)
-- [ ] 1.3 - Design airport database schema (PostGIS geometry column, indexes)
-- [ ] 1.4 - connect db (Postgres/PostGIS client setup)
+- [X] 1.3 - Design airport database schema (PostGIS geometry column, indexes)
+- [X] 1.4 - connect db (Postgres/PostGIS client setup)
 - [ ] 1.5 - connect CSV to db (parse CSV → insert into Postgres with PostGIS)
 - [ ] 1.6 - Add spatial indexes (GIST index on geometry column for performance)
 - [ ] 1.7 - Create verify-dataset script (validate data integrity after ingestion)
