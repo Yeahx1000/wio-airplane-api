@@ -26,8 +26,8 @@ Why? getting a foundation set before doing anything else
 - [X] 1.2 - Install core dependencies (pg, postgis, zod, @fastify/swagger, etc.)
 - [X] 1.3 - Design airport database schema (PostGIS geometry column, indexes)
 - [X] 1.4 - connect db (Postgres/PostGIS client setup)
-- [ ] 1.5 - connect CSV to db (parse CSV → insert into Postgres with PostGIS)
-- [ ] 1.6 - Add spatial indexes (GIST index on geometry column for performance)
+- [X] 1.5 - connect CSV to db (parse CSV → insert into Postgres with PostGIS)
+- [X] 1.6 - Add spatial indexes (GIST index on geometry column for performance)
 - [ ] 1.7 - Create verify-dataset script (validate data integrity after ingestion)
 
 ## Phase 2: Core Logic
