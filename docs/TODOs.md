@@ -1,7 +1,6 @@
 # TODOs
 
 Mapped out TODOs prior to attempting implementation. 
-
 Will be working through the following steps in order (theoretically)
 
 Quick completion Checklist:
@@ -18,7 +17,14 @@ Prior - Phase 0: Setup
 - [X] 0.2 - Create .gitignore
 - [X] 0.3 - Create .env.example
 - [X] 0.4 - Create README
-- [ ] 0.5 - Setup AWS services (ECS, Fargate, RDS, etc.)
+- [ ] 0.5 - Setup AWS services 
+    - [ ] ECS
+    - [ ] Fargate
+    - [X] RDS
+    - [ ] CloudWatch
+    - [ ] CloudFront
+    - [ ] S3
+    - [X] ElasticCache
 
 ## Phase 1: Foundation & Database
 Why? getting a foundation set before doing anything else
@@ -39,8 +45,8 @@ Why? For figuring out how to calculate distances, etc.
 
 ## Phase 3: Repository & Service Layer
 Why? Seperation of concerns with database queries
-- [ ] 3.1 - airport repository (PostGIS queries: radius, distance, lookup by country)
-- [ ] 3.2 - Create cache (Redis client setup and key management)
+- [X] 3.1 - airport repository (PostGIS queries: radius, distance, lookup by country)
+- [X] 3.2 - Create cache (Redis client setup and key management)
 - [ ] 3.3 - Airport service (handle repository + cache + business logic)
 - [ ] 3.4 - Route service (handle routing domain + repository)
 
