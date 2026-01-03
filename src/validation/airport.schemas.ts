@@ -1,30 +1,37 @@
 import { z } from 'zod';
 
-export const radiusQuerySchema = z.object({
-    query: z.object({
-        lat: z.number().min(-90).max(90),
-        lon: z.number().min(-180).max(180),
-        radius: z.number().min(0),
+export const airportByIdParamsSchema = z.object({
+    params: z.object({
+        id: z.coerce.number().int().positive(),
     }),
 });
 
-export const distanceParamsSchema = z.object({
-    params: z.object({
-        id1: z.string().min(1),
-        id2: z.string().min(1),
+export const radiusQuerySchema = z.object({
+    query: z.object({
+        lat: z.coerce.number().min(-90).max(90),
+        lon: z.coerce.number().min(-180).max(180),
+        radius: z.coerce.number().min(0),
+    }),
+});
+
+export const distanceQuerySchema = z.object({
+    query: z.object({
+        id1: z.coerce.number().int().positive(),
+        id2: z.coerce.number().int().positive(),
     }),
 });
 
 export const countryComparisonQuerySchema = z.object({
     query: z.object({
-        country: z.string().min(1),
+        country1: z.string().min(1),
+        country2: z.string().min(1),
     }),
 });
 
-export const routeParamsSchema = z.object({
+export const routeQuerySchema = z.object({
     query: z.object({
-        fromId: z.string().min(1),
-        toId: z.string().min(1),
+        fromId: z.coerce.number().int().positive(),
+        toId: z.coerce.number().int().positive(),
     }),
 });
 

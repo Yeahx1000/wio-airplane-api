@@ -15,3 +15,9 @@ export interface AirportWithDistance extends Airport {
   distance?: number;
 }
 
+export interface CountryComparison {
+  airport1: Airport;
+  airport2: Airport;
+  distance: number;
+}
+

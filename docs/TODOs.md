@@ -52,8 +52,8 @@ Why? Seperation of concerns with database queries
 
 ## Phase 4: API Layer
 Why? plugging things together.
-- [ ] 4.1 - Add request validation schemas (Zod schemas for all 5 endpoints)
-- [ ] 4.2 - Implement airport controller (handle all 5 endpoint requests)
+- [X] 4.1 - Add request validation schemas (Zod schemas for all 5 endpoints)
+- [X] 4.2 - Implement airport controller (handle all 5 endpoint requests)
 - [ ] 4.3 - Define API routes (Fastify route definitions with validation)
 - [ ] 4.4 - Add Swagger/OpenAPI documentation
 

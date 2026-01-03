@@ -1,13 +1,14 @@
 import { AirportRepository } from '../repositories/airport.repository.js';
 import { redisClient } from '../cache/index.js';
 import { cacheKeys } from '../cache/keys.js';
-import { Airport, AirportWithDistance } from '../models/airport.types.js';
+import { Airport, AirportWithDistance, CountryComparison } from '../models/airport.types.js';
 
 const CACHE_TTL = {
     AIRPORT: 3600,
     AIRPORTS_IN_RADIUS: 1800,
     DISTANCE: 3600,
     AIRPORTS_BY_COUNTRY: 3600,
+    COUNTRY_COMPARISON: 3600,
 };
 
 export class AirportService {
@@ -69,5 +70,48 @@ export class AirportService {
 
     async findAll(): Promise<Airport[]> {
         return await this.repository.findAll();
+    }
+
+    async findCountryComparison(country1: string, country2: string): Promise<CountryComparison | null> {
+        const cacheKey = cacheKeys.countryComparison(country1, country2);
+        const cached = await redisClient.getJSON<CountryComparison>(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        const airports1 = await this.repository.findByCountry(country1);
+        const airports2 = await this.repository.findByCountry(country2);
+
+        if (airports1.length === 0 || airports2.length === 0) {
+            return null;
+        }
+
+        let minDistance = Infinity;
+        let closestAirport1: Airport | null = null;
+        let closestAirport2: Airport | null = null;
+
+        for (const airport1 of airports1) {
+            for (const airport2 of airports2) {
+                const distance = await this.repository.findDistance(airport1.id, airport2.id);
+                if (distance !== null && distance < minDistance) {
+                    minDistance = distance;
+                    closestAirport1 = airport1;
+                    closestAirport2 = airport2;
+                }
+            }
+        }
+
+        if (closestAirport1 === null || closestAirport2 === null) {
+            return null;
+        }
+
+        const result: CountryComparison = {
+            airport1: closestAirport1,
+            airport2: closestAirport2,
+            distance: minDistance,
+        };
+
+        await redisClient.setJSON(cacheKey, result, CACHE_TTL.COUNTRY_COMPARISON);
+        return result;
     }
 }
