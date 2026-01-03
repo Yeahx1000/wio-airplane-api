@@ -23,7 +23,7 @@ Prior - Phase 0: Setup
     - [X] RDS
     - [ ] CloudWatch
     - [ ] CloudFront
-    - [ ] S3
+    - [ ] ~~S3~~ (not needed, migrated CSV in batches to RDS using terminal script already)
     - [X] ElasticCache
 
 ## Phase 1: Foundation & Database
@@ -47,8 +47,8 @@ Why? For figuring out how to calculate distances, etc.
 Why? Seperation of concerns with database queries
 - [X] 3.1 - airport repository (PostGIS queries: radius, distance, lookup by country)
 - [X] 3.2 - Create cache (Redis client setup and key management)
-- [ ] 3.3 - Airport service (handle repository + cache + business logic)
-- [ ] 3.4 - Route service (handle routing domain + repository)
+- [X] 3.3 - Airport service (handle repository + cache + business logic)
+- [X] 3.4 - Route service (handle routing domain + repository)
 
 ## Phase 4: API Layer
 Why? plugging things together.

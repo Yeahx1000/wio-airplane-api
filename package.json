@@ -8,7 +8,7 @@
     "dev": "nodemon --exec tsx src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "ingest": "tsx scripts/ingest-airports.ts",
+    "ingest": "tsx misc/scripts/ingest-airports.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
