@@ -17,3 +17,4 @@ fastify.listen({ port: config.server.port, host: config.server.host }, (err) => 
   }
   fastify.log.info(`Server listening on ${config.server.host}:${config.server.port}`);
 });
+

@@ -4,10 +4,26 @@ Mapped out TODOs prior to attempting implementation.
 
 Will be working through the following steps in order (theoretically)
 
+Quick completion Checklist:
+- Auth
+- Rate Limiting
+- Logging
+- Error Handling
+- Validation
+- Documentation
+- Tests?
+
+Prior - Phase 0: Setup
+- [X] 0.1 - Create repo
+- [X] 0.2 - Create .gitignore
+- [X] 0.3 - Create .env.example
+- [X] 0.4 - Create README
+- [ ] 0.5 - Setup AWS services (ECS, Fargate, RDS, etc.)
+
 ## Phase 1: Foundation & Database
 Why? getting a foundation set before doing anything else
-- [ ] 1.1 - Define environment configuration (env.ts with validation)
-- [ ] 1.2 - Install core dependencies (pg, postgis, zod, @fastify/swagger, etc.)
+- [X] 1.1 - Define environment configuration (env.ts with validation)
+- [X] 1.2 - Install core dependencies (pg, postgis, zod, @fastify/swagger, etc.)
 - [ ] 1.3 - Design airport database schema (PostGIS geometry column, indexes)
 - [ ] 1.4 - connect db (Postgres/PostGIS client setup)
 - [ ] 1.5 - connect CSV to db (parse CSV → insert into Postgres with PostGIS)
@@ -48,3 +64,6 @@ Why? self explanatory
 - [ ] 6.1 - Document API endpoints (Swagger + README)
 - [ ] 6.2 - Verify performance (test 500 req/s capacity)
 - [ ] 6.3 - General Testing (integration tests?)
+
+## Phase 7: Delivery & Costs
+- [ ] 7.1 - Provide estimates on the scalability and monthly costs.
