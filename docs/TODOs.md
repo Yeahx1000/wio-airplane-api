@@ -34,8 +34,8 @@ Why? getting a foundation set before doing anything else
 Why? For figuring out how to calculate distances, etc.
 - [X] 2.1 - Haversine distance calculation (domain/geo/haversine.ts)
 - [X] 2.2 - Unit conversion helpers (miles ↔ km)
-- [ ] 2.3 - BFS routing algorithm (domain/routing/bfs.ts - 500mi constraint)
-- [ ] 2.4 - path builder (domain/routing/path-builder.ts - leg distances)
+- [X] 2.3 - BFS routing algorithm (domain/routing/bfs.ts - 500mi constraint)
+- [X] 2.4 - path builder (domain/routing/path-builder.ts - leg distances)
 
 ## Phase 3: Repository & Service Layer
 Why? Seperation of concerns with database queries
