@@ -28,7 +28,7 @@ Why? getting a foundation set before doing anything else
 - [X] 1.4 - connect db (Postgres/PostGIS client setup)
 - [X] 1.5 - connect CSV to db (parse CSV → insert into Postgres with PostGIS)
 - [X] 1.6 - Add spatial indexes (GIST index on geometry column for performance)
-- [ ] 1.7 - Create verify-dataset script (validate data integrity after ingestion)
+- [ ] ~~1.7 - Create verify-dataset script (validate data integrity after ingestion)~~ (decided not necessary)
 
 ## Phase 2: Core Logic
 Why? For figuring out how to calculate distances, etc.
