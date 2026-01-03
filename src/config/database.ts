@@ -31,7 +31,7 @@ export const initializeDatabase = async () => {
         client.release();
 
         const sql = readFileSync(
-            join(process.cwd(), 'data', 'migrations', 'create_airports_table.sql'),
+            join(process.cwd(), 'misc', 'data', 'migrations', 'create_airports_table.sql'),
             'utf8'
         );
 

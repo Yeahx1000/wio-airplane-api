@@ -54,7 +54,8 @@ Why? Seperation of concerns with database queries
 Why? plugging things together.
 - [X] 4.1 - Add request validation schemas (Zod schemas for all 5 endpoints)
 - [X] 4.2 - Implement airport controller (handle all 5 endpoint requests)
-- [ ] 4.3 - Define API routes (Fastify route definitions with validation)
+- [X] 4.3 - Define API routes (Fastify route definitions with validation)
+- [ ] 4.35 - refactor zod integration? (clashes with fastify a bit)
 - [ ] 4.4 - Add Swagger/OpenAPI documentation
 
 ## Phase 5: Infra & Observability (optional)
