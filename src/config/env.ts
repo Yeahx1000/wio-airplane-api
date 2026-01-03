@@ -1,4 +1,7 @@
+import { config as dotenvConfig } from 'dotenv';
 import { z } from 'zod';
+
+dotenvConfig();
 
 // not really 100% necessary, may not even use, but helps with type safety and validation
 

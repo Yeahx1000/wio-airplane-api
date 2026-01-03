@@ -3,7 +3,21 @@ import { config } from './env.js';
 import { Pool } from 'pg';
 import { join } from 'path';
 
-export const pool = new Pool(config.database);
+const poolConfig = {
+    ...config.database,
+    ssl: config.database.ssl ? { rejectUnauthorized: false } : false,
+};
+
+console.log('Database connection config:', {
+    host: poolConfig.host,
+    port: poolConfig.port,
+    database: poolConfig.database,
+    user: poolConfig.user,
+    password: poolConfig.password ? '***' : '(not set)',
+    ssl: poolConfig.ssl,
+});
+
+export const pool = new Pool(poolConfig);
 
 pool.on('error', (err) => {
     console.error('Unexpected error on idle database client', err);
