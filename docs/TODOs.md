@@ -32,8 +32,8 @@ Why? getting a foundation set before doing anything else
 
 ## Phase 2: Core Logic
 Why? For figuring out how to calculate distances, etc.
-- [ ] 2.1 - Haversine distance calculation (domain/geo/haversine.ts)
-- [ ] 2.2 - Unit conversion helpers (miles ↔ km)
+- [X] 2.1 - Haversine distance calculation (domain/geo/haversine.ts)
+- [X] 2.2 - Unit conversion helpers (miles ↔ km)
 - [ ] 2.3 - BFS routing algorithm (domain/routing/bfs.ts - 500mi constraint)
 - [ ] 2.4 - path builder (domain/routing/path-builder.ts - leg distances)
 
