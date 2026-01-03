@@ -1,7 +1,7 @@
 import { createReadStream } from 'fs';
 import { join } from 'path';
 import { parse } from 'csv-parse';
-import { initializeDatabase, pool, closeDatabase } from '../src/config/database.js';
+import { initializeDatabase, pool, closeDatabase } from '../../src/config/database.js';
 
 // this script is used to insert the airports data into the database. 
 // on setup, use 'npm run ingest' to run it.
