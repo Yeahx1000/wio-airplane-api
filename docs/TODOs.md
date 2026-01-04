@@ -65,7 +65,7 @@ Why? for security
 - [X] 4.65 - ensure user pool is configured correctly (Cognito)
 - [X] 4.7 - plug in rate limiting middleware
 - [ ] 4.8 - ~~CDN setup~~ (since we're not serving static files currently, not needed)
-- [ ] 4.9 - Fix whatever is wrong with Elasticache (not necessary, but for the sake of it)
+- [ ] 4.9 - Fix whatever is wrong with Elasticache, crashing on startup (not necessary, but for the sake of it)
 - [ ] 4.10 - Containerize the API (Docker) and deploy to ECS
 
 ## Phase 5: Infra & Observability (optional)
@@ -85,4 +85,5 @@ Why? self explanatory
 
 ## Phase 7: Delivery & Costs
 - [ ] 7.1 - Provide estimates on the scalability and monthly costs. Consider alternatives and tradeoffs.
+- [ ] 7.2 - Clean up codebase, DRY up, remove unused code, yada yada.
     
