@@ -77,10 +77,11 @@ Why? for security
 - [X] 4.65 - ensure user pool is configured correctly (Cognito)
 - [X] 4.7 - plug in rate limiting middleware
 - [ ] 4.8 - ~~CDN setup~~ (since we're not serving static files currently, not needed)
-- [ ] 4.9 - Fix whatever is wrong with Elasticache, crashing on startup (not necessary, but for the sake of it)
+- [X] 4.9 - Fix whatever is wrong with Elasticache, crashing on startup (not necessary, but for the sake of it)
 - [ ] 4.10 - Containerize the API (Docker) and deploy to ECS
 - [X] 4.11 - Complete Swagger UI examples
-- [ ] 4.12 - Fix airports/countries route crashing when requests sent.
+- [X] 4.12 - Fix airports/countries route crashing when requests sent.
+- [X] 4.13 - Fix airports/routes route hang, algo issue, finishes, but takes way too long.
 
 ## Phase 5: Infra & Observability (optional)
 

@@ -11,6 +11,8 @@ const MAX_LEG_DISTANCE_MILES = 500;
 const MAX_LEG_DISTANCE_KM = milesToKilometers(MAX_LEG_DISTANCE_MILES);
 const ROUTE_CACHE_TTL = 3600;
 const MAX_BFS_NODES = 10000;
+const NEIGHBOR_CACHE_TTL = 86400 * 30;
+const MAX_NEIGHBORS_PER_AIRPORT = 200;
 
 export class RouteService {
     constructor(
@@ -91,6 +93,12 @@ export class RouteService {
     }
 
     private async getNeighbors(id: number): Promise<Array<{ id: number; distance: number }>> {
+        const cacheKey = cacheKeys.neighbors(id);
+        const cached = await redisClient.getJSON<Array<{ id: number; distance: number }>>(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
         const airport = await this.repository.findById(id);
         if (!airport) {
             return [];
@@ -99,15 +107,19 @@ export class RouteService {
         const airportsInRadius = await this.repository.findByRadius(
             airport.latitude,
             airport.longitude,
-            MAX_LEG_DISTANCE_KM
+            MAX_LEG_DISTANCE_KM,
+            MAX_NEIGHBORS_PER_AIRPORT
         );
 
-        return airportsInRadius
+        const neighbors = airportsInRadius
             .filter(a => a.id !== id)
             .map(a => ({
                 id: a.id,
                 distance: a.distance || 0,
             }));
+
+        await redisClient.setJSON(cacheKey, neighbors, NEIGHBOR_CACHE_TTL);
+        return neighbors;
     }
 
     private async getDistancesForPath(path: number[]): Promise<number[]> {

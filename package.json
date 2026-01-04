@@ -9,6 +9,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "ingest": "tsx misc/scripts/ingest-airports.ts",
+    "warm-cache": "tsx misc/scripts/warm-cache.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

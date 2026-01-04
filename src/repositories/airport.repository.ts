@@ -25,9 +25,10 @@ export class AirportRepository {
         return result.rows[0] || null;
     }
 
-    async findByRadius(lat: number, lon: number, radiusKm: number): Promise<AirportWithDistance[]> {
+    async findByRadius(lat: number, lon: number, radiusKm: number, limit?: number): Promise<AirportWithDistance[]> {
         const point = `ST_MakePoint($1, $2)::geography`;
         const radiusMeters = radiusKm * 1000;
+        const limitClause = limit ? `LIMIT ${limit}` : '';
 
         const result = await pool.query(
             `SELECT 
@@ -44,7 +45,8 @@ export class AirportRepository {
                 ST_Distance(location::geography, ${point}) / 1000.0 as distance
             FROM airports
             WHERE ST_DWithin(location::geography, ${point}, $3)
-            ORDER BY distance ASC`,
+            ORDER BY distance ASC
+            ${limitClause}`,
             [lon, lat, radiusMeters]
         );
 
