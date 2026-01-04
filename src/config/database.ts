@@ -6,6 +6,8 @@ import { join } from 'path';
 const poolConfig = {
     ...config.database,
     ssl: config.database.ssl ? { rejectUnauthorized: false } : false,
+    query_timeout: 30000,
+    statement_timeout: 30000,
 };
 
 console.log('Database connection config:', {

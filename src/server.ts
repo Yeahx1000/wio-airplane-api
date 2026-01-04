@@ -7,6 +7,7 @@ import { initializeDatabase } from './config/database.js';
 
 const fastify = Fastify({
   logger: config.nodeEnv !== 'production',
+  requestTimeout: 60000,
 });
 
 async function start() {

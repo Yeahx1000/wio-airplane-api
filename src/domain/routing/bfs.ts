@@ -48,7 +48,8 @@ export const findShortestPathAsync = async (
   startId: number,
   endId: number,
   maxDistance: number,
-  getNeighbors: (id: number) => Promise<Array<{ id: number; distance: number }>>
+  getNeighbors: (id: number) => Promise<Array<{ id: number; distance: number }>>,
+  maxNodes: number = 10000
 ): Promise<number[]> => {
   if (startId === endId) {
     return [startId];
@@ -59,6 +60,10 @@ export const findShortestPathAsync = async (
   const parent = new Map<number, number>();
 
   while (queue.length > 0) {
+    if (visited.size > maxNodes) {
+      return [];
+    }
+
     const current = queue.shift()!;
 
     if (current === endId) {

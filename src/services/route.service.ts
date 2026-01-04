@@ -10,6 +10,7 @@ import { Airport } from '../models/airport.model.js';
 const MAX_LEG_DISTANCE_MILES = 500;
 const MAX_LEG_DISTANCE_KM = milesToKilometers(MAX_LEG_DISTANCE_MILES);
 const ROUTE_CACHE_TTL = 3600;
+const MAX_BFS_NODES = 10000;
 
 export class RouteService {
     constructor(
@@ -35,7 +36,8 @@ export class RouteService {
             fromId,
             toId,
             MAX_LEG_DISTANCE_KM,
-            (id: number) => this.getNeighbors(id)
+            (id: number) => this.getNeighbors(id),
+            MAX_BFS_NODES
         );
 
         if (path.length === 0) {
@@ -109,22 +111,25 @@ export class RouteService {
     }
 
     private async getDistancesForPath(path: number[]): Promise<number[]> {
-        const distances: number[] = [];
-        for (let i = 0; i < path.length - 1; i++) {
-            const distance = await this.repository.findDistance(path[i], path[i + 1]);
-            distances.push(distance || 0);
+        if (path.length < 2) {
+            return [];
         }
-        return distances;
+
+        const promises = [];
+        for (let i = 0; i < path.length - 1; i++) {
+            promises.push(this.repository.findDistance(path[i], path[i + 1]));
+        }
+        const results = await Promise.all(promises);
+        return results.map(d => d || 0);
     }
 
     private async getAirportsForPath(path: number[]): Promise<Airport[]> {
-        const airports: Airport[] = [];
-        for (const id of path) {
-            const airport = await this.repository.findById(id);
-            if (airport) {
-                airports.push(airport);
-            }
+        if (path.length === 0) {
+            return [];
         }
-        return airports;
+
+        const promises = path.map(id => this.repository.findById(id));
+        const results = await Promise.all(promises);
+        return results.filter((a): a is Airport => a !== null);
     }
 }

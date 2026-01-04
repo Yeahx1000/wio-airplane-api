@@ -79,39 +79,12 @@ export class AirportService {
             return cached;
         }
 
-        const airports1 = await this.repository.findByCountry(country1);
-        const airports2 = await this.repository.findByCountry(country2);
-
-        if (airports1.length === 0 || airports2.length === 0) {
+        const comparison = await this.repository.findClosestAirportsBetweenCountries(country1, country2);
+        if (!comparison) {
             return null;
         }
 
-        let minDistance = Infinity;
-        let closestAirport1: Airport | null = null;
-        let closestAirport2: Airport | null = null;
-
-        for (const airport1 of airports1) {
-            for (const airport2 of airports2) {
-                const distance = await this.repository.findDistance(airport1.id, airport2.id);
-                if (distance !== null && distance < minDistance) {
-                    minDistance = distance;
-                    closestAirport1 = airport1;
-                    closestAirport2 = airport2;
-                }
-            }
-        }
-
-        if (closestAirport1 === null || closestAirport2 === null) {
-            return null;
-        }
-
-        const result: CountryComparison = {
-            airport1: closestAirport1,
-            airport2: closestAirport2,
-            distance: minDistance,
-        };
-
-        await redisClient.setJSON(cacheKey, result, CACHE_TTL.COUNTRY_COMPARISON);
-        return result;
+        await redisClient.setJSON(cacheKey, comparison, CACHE_TTL.COUNTRY_COMPARISON);
+        return comparison;
     }
 }
