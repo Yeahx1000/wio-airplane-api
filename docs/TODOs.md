@@ -65,6 +65,7 @@ Why? for security
 - [X] 4.65 - ensure user pool is configured correctly (Cognito)
 - [X] 4.7 - plug in rate limiting middleware
 - [ ] 4.8 - ~~CDN setup~~ (since we're not serving static files currently, not needed)
+- [ ] 4.9 - Fix whatever is wrong with Elasticache (not necessary, but for the sake of it)
 
 ## Phase 5: Infra & Observability (optional)
 Why? for monitoring, logging, etc.
