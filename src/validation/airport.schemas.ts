@@ -25,3 +25,57 @@ export const routeQuerySchema = z.object({
     toId: z.coerce.number().int().positive(),
 });
 
+const airportSchema = z.object({
+    id: z.number().int(),
+    airportName: z.string(),
+    city: z.string(),
+    country: z.string(),
+    iataFaa: z.string().optional(),
+    icao: z.string().optional(),
+    latitude: z.number(),
+    longitude: z.number(),
+    altitude: z.number(),
+    timezone: z.string(),
+});
+
+const airportWithDistanceSchema = airportSchema.extend({
+    distance: z.number().optional(),
+});
+
+export const airportResponseSchema = airportSchema;
+
+export const airportsByRadiusResponseSchema = z.array(airportWithDistanceSchema);
+
+export const distanceResponseSchema = z.object({
+    distance: z.number(),
+});
+
+const countryComparisonAirportSchema = airportSchema;
+
+export const countryComparisonResponseSchema = z.object({
+    airport1: countryComparisonAirportSchema,
+    airport2: countryComparisonAirportSchema,
+    distance: z.number(),
+});
+
+const routeLegAirportSchema = z.object({
+    id: z.number().int(),
+    name: z.string(),
+    city: z.string(),
+    country: z.string(),
+});
+
+const routeLegSchema = z.object({
+    fromId: z.number().int(),
+    toId: z.number().int(),
+    fromAirport: routeLegAirportSchema,
+    toAirport: routeLegAirportSchema,
+    distance: z.number(),
+});
+
+export const routeResponseSchema = z.object({
+    legs: z.array(routeLegSchema),
+    totalDistance: z.number(),
+    totalStops: z.number(),
+});
+

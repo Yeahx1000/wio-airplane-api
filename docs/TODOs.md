@@ -18,11 +18,10 @@ Prior - Phase 0: Setup
 - [X] 0.3 - Create .env.example
 - [X] 0.4 - Create README
 - [ ] 0.5 - Setup AWS services 
-    - [ ] ECS
-    - [ ] Fargate
+    - [ ] ECS + Fargate
     - [X] RDS
-    - [ ] CloudWatch
-    - [ ] CloudFront
+    - [X] CloudWatch
+    - [ ] ~~CloudFront~~ (not needed, since we're not serving static files currently)
     - [ ] ~~S3~~ (not needed, migrated CSV in batches to RDS using terminal script already)
     - [X] ElasticCache
 
@@ -56,7 +55,14 @@ Why? plugging things together.
 - [X] 4.2 - Implement airport controller (handle all 5 endpoint requests)
 - [X] 4.3 - Define API routes (Fastify route definitions with validation)
 - [X] 4.35 - Refactor zod integration (using zod-to-json-schema for Fastify compatibility)
-- [ ] 4.4 - Add Swagger/OpenAPI documentation
+- [X] 4.4 - Add Swagger/OpenAPI documentation
+
+## Phase 4.5: Authentication + Optimizations 
+Why? for security
+- [ ] 4.5 - Implement authentication (JWT)
+- [ ] 4.6 - Add authentication middleware
+- [ ] 4.7 - plug in rate limiting middleware
+- [ ] 4.8 - ~~CDN setup~~ (since we're not serving static files currently, not needed)
 
 ## Phase 5: Infra & Observability (optional)
 Why? for monitoring, logging, etc.

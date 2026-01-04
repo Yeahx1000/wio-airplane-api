@@ -10,7 +10,7 @@ Keeping this here to reference as I go through the project. Also available in th
   - ECS (containerize API, Fargate, helping to scale horizontally)
   - ElasticCache (Redis)
   - CloudFront (CDN)
-  - Cloudwatch?
+  - Cloudwatch (metrics, logs, naturally there when using other services on AWS)
 - Docker
 - Zod (data validation)
 - Swagger (API documentation)

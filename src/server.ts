@@ -24,7 +24,7 @@ async function start() {
       fastify.log.warn('Redis unavailable, continuing without cache');
     }
 
-    configureApp(fastify);
+    await configureApp(fastify);
     registerRoutes(fastify);
 
     await fastify.listen({ port: config.server.port, host: config.server.host });
