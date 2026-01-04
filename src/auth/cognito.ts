@@ -2,6 +2,7 @@ import {
     CognitoIdentityProviderClient,
     InitiateAuthCommand,
     AuthFlowType,
+    ListUsersCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { createHmac } from 'crypto';
@@ -46,21 +47,44 @@ function createSecretHash(username: string): string {
     return hmac.digest('base64');
 }
 
-export async function login(email: string, password: string): Promise<CognitoTokens> {
-    // Debugging: Check if secret is loaded
-    console.log('Client Secret exists:', !!config.cognito.clientSecret);
-    console.log('Client ID:', config.cognito.clientId);
+async function findUsernameByEmail(email: string): Promise<string | null> {
+    try {
+        const command = new ListUsersCommand({
+            UserPoolId: config.cognito.userPoolId,
+            Filter: `email = "${email}"`,
+            Limit: 1,
+        });
+
+        const response = await client.send(command);
+        
+        if (response.Users && response.Users.length > 0) {
+            return response.Users[0].Username || null;
+        }
+        return null;
+    } catch (error) {
+        console.error('Error looking up user by email:', error);
+        return null;
+    }
+}
+
+export async function login(usernameOrEmail: string, password: string): Promise<CognitoTokens> {
+    let username = usernameOrEmail;
+    
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(usernameOrEmail);
+    if (isEmail) {
+        const foundUsername = await findUsernameByEmail(usernameOrEmail);
+        if (foundUsername) {
+            username = foundUsername;
+        }
+    }
 
     const authParams: Record<string, string> = {
-        USERNAME: email,
+        USERNAME: username,
         PASSWORD: password,
     };
 
     if (config.cognito.clientSecret) {
-        authParams.SECRET_HASH = createSecretHash(email);
-        console.log('SECRET_HASH generated:', !!authParams.SECRET_HASH);
-    } else {
-        console.log('WARNING: Client secret not found in config!');
+        authParams.SECRET_HASH = createSecretHash(username);
     }
 
     const command = new InitiateAuthCommand({
