@@ -85,5 +85,6 @@ Why? self explanatory
 
 ## Phase 7: Delivery & Costs
 - [ ] 7.1 - Provide estimates on the scalability and monthly costs. Consider alternatives and tradeoffs.
-- [ ] 7.2 - Clean up codebase, DRY up, remove unused code, yada yada.
+- [ ] 7.2 - Create a "full" potential Sys design, including E2E breakdown Client Layer, API Layer, Data Layer, Analytics, with cost analysis.
+- [ ] 7.3 - Clean up codebase, DRY up, remove unused code, yada yada.
     
