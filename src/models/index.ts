@@ -1,2 +1,2 @@
-export * from './airport.types.js';
-export * from './route.types.js';
+export * from './airport.models.js';
+export * from './route.models.js';
