@@ -3,6 +3,7 @@ import { AirportRepository } from '../../repositories/airport.repository.js';
 import { AirportService } from '../../services/airport.service.js';
 import { RouteService } from '../../services/route.service.js';
 import { AirportController } from '../controllers/airport.controller.js';
+import { authenticate } from '../middleware/auth.js';
 import {
     airportResponseSchema,
     airportsByRadiusResponseSchema,
@@ -19,9 +20,11 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
     const controller = new AirportController(airportService, routeService);
 
     fastify.get('/airports/:id', {
+        preHandler: [authenticate],
         schema: {
             tags: ['Airports'],
             description: 'Get airport by ID',
+            security: [{ bearerAuth: [] }],
             params: {
                 type: 'object',
                 properties: {
@@ -31,6 +34,13 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
             },
             response: {
                 200: zodToFastifySchema(airportResponseSchema),
+                401: {
+                    type: 'object',
+                    properties: {
+                        error: { type: 'string' },
+                        message: { type: 'string' },
+                    },
+                },
                 404: {
                     type: 'object',
                     properties: {
@@ -41,12 +51,15 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
             },
         },
         handler: controller.getAirportById.bind(controller),
-    });
+    } as any);
 
     fastify.get('/airports/radius', {
+        // @ts-ignore - Fastify v5 typing issue
+        preHandler: [authenticate],
         schema: {
             tags: ['Airports'],
             description: 'Get airports within a given radius of a coordinate',
+            security: [{ bearerAuth: [] }],
             querystring: {
                 type: 'object',
                 properties: {
@@ -58,15 +71,25 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
             },
             response: {
                 200: zodToFastifySchema(airportsByRadiusResponseSchema),
+                401: {
+                    type: 'object',
+                    properties: {
+                        error: { type: 'string' },
+                        message: { type: 'string' },
+                    },
+                },
             },
         },
         handler: controller.getAirportsByRadius.bind(controller),
-    });
+    } as any);
 
     fastify.get('/airports/distance', {
+        // @ts-ignore - Fastify v5 typing issue
+        preHandler: [authenticate],
         schema: {
             tags: ['Airports'],
             description: 'Get distance between two airports in kilometers',
+            security: [{ bearerAuth: [] }],
             querystring: {
                 type: 'object',
                 properties: {
@@ -77,6 +100,13 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
             },
             response: {
                 200: zodToFastifySchema(distanceResponseSchema),
+                401: {
+                    type: 'object',
+                    properties: {
+                        error: { type: 'string' },
+                        message: { type: 'string' },
+                    },
+                },
                 404: {
                     type: 'object',
                     properties: {
@@ -87,12 +117,15 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
             },
         },
         handler: controller.getDistance.bind(controller),
-    });
+    } as any);
 
     fastify.get('/airports/countries', {
+        // @ts-ignore - Fastify v5 typing issue
+        preHandler: [authenticate],
         schema: {
             tags: ['Airports'],
             description: 'Get the closest airports between two countries',
+            security: [{ bearerAuth: [] }],
             querystring: {
                 type: 'object',
                 properties: {
@@ -103,6 +136,13 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
             },
             response: {
                 200: zodToFastifySchema(countryComparisonResponseSchema),
+                401: {
+                    type: 'object',
+                    properties: {
+                        error: { type: 'string' },
+                        message: { type: 'string' },
+                    },
+                },
                 404: {
                     type: 'object',
                     properties: {
@@ -113,12 +153,15 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
             },
         },
         handler: controller.getCountryComparison.bind(controller),
-    });
+    } as any);
 
     fastify.get('/airports/route', {
+        // @ts-ignore - Fastify v5 typing issue
+        preHandler: [authenticate],
         schema: {
             tags: ['Routes'],
             description: 'Get the shortest route between two airports (500 mile max leg distance)',
+            security: [{ bearerAuth: [] }],
             querystring: {
                 type: 'object',
                 properties: {
@@ -129,6 +172,13 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
             },
             response: {
                 200: zodToFastifySchema(routeResponseSchema),
+                401: {
+                    type: 'object',
+                    properties: {
+                        error: { type: 'string' },
+                        message: { type: 'string' },
+                    },
+                },
                 404: {
                     type: 'object',
                     properties: {
@@ -139,5 +189,5 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
             },
         },
         handler: controller.getRoute.bind(controller),
-    });
+    } as any);
 };

@@ -9,3 +9,7 @@
 - Postgres/PostGIS vs other db types - allows for easier spatial queries, requires more setup and maintenance
 - Swagger vs other API docs - Commonly used, easy to generate
 - interfaces vs type aliases - Initialized as Interfaces, will likely go back and change to types for more type safety, can avoid interface merging issues down the road.
+- Cognito vs custom auth or other providers - Keeping it in AWS ecosystem, 60%+ reduction in lines of code, easier to scale, secure, trustworthy.
+
+### Some thoughts
+A downside of some of the tradeoffs made here is vender lock-in to AWS, which can also be more expensive than alternatives, but given the needs for reliability and scalability, it's a tradeoff worth making, in my opinion.

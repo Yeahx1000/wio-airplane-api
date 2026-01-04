@@ -1,12 +1,24 @@
 import { FastifyInstance } from 'fastify';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
+import fastifyHelmet from '@fastify/helmet';
 import { rateLimit } from '../http/middleware/rate-limit.js';
 import { logger } from '../http/middleware/logger.js';
 import { errorHandler } from '../http/middleware/error-handler.js';
 
 export const configureApp = async (app: FastifyInstance) => {
     app.setErrorHandler(errorHandler);
+
+    await app.register(fastifyHelmet, {
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                styleSrc: ["'self'", "'unsafe-inline'"],
+                scriptSrc: ["'self'"],
+                imgSrc: ["'self'", "data:", "https:"],
+            },
+        },
+    });
 
     app.addHook('onRequest', async (req, res) => {
         req.startTime = Date.now();
@@ -27,6 +39,15 @@ export const configureApp = async (app: FastifyInstance) => {
                     description: 'Development server',
                 },
             ],
+            components: {
+                securitySchemes: {
+                    bearerAuth: {
+                        type: 'http',
+                        scheme: 'bearer',
+                        bearerFormat: 'JWT',
+                    },
+                },
+            },
         },
     });
 

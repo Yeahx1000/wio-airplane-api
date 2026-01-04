@@ -16,6 +16,7 @@ These weren't all used given the scope, but at scale they could, they would be.
   - ElasticCache (Redis)
   - ~~CloudFront (CDN)~~
   - Cloudwatch (metrics, logs)
+  - Cognito (Auth & User management)
 - Docker
 - Zod (validation)
 - Swagger (API documentation)

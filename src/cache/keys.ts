@@ -11,6 +11,7 @@ export const cacheKeys = {
     const [id1, id2] = [fromId, toId].sort((a, b) => a - b);
     return `route:${id1}:${id2}`;
   },
+  // rate limiting keys, being handled by redis
   rateLimit: {
     ip: (ip: string, window: number) => `rate_limit:ip:${ip}:${window}`,
     user: (userId: string, window: number) => `rate_limit:user:${userId}:${window}`,

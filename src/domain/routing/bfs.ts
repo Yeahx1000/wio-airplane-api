@@ -1,3 +1,5 @@
+// using BFS to find the shortest path between two airports, more efficient than DFS in this case
+
 export const findShortestPath = (
   startId: number,
   endId: number,

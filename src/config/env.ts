@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 dotenvConfig();
 
-// not really 100% necessary, may not even use, but helps with type safety and validation
+// this is the schema for validating the .env variables, it's making sure all required vars are 1. present and 2. adhering to type.
 
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -27,6 +27,11 @@ const envSchema = z.object({
     RATE_LIMIT_WINDOW_MS: z.string().regex(/^\d+$/).transform(Number).default(60000),
     RATE_LIMIT_GLOBAL_MAX: z.string().regex(/^\d+$/).transform(Number).default(800),
     RATE_LIMIT_GLOBAL_WINDOW_MS: z.string().regex(/^\d+$/).transform(Number).default(1000),
+
+    AWS_REGION: z.string().default('us-east-1'),
+    COGNITO_USER_POOL_ID: z.string().min(1),
+    COGNITO_CLIENT_ID: z.string().min(1),
+    COGNITO_CLIENT_SECRET: z.string().optional(),
 });
 
 type Env = z.infer<typeof envSchema>;
@@ -73,6 +78,12 @@ export const config = {
         windowMs: env.RATE_LIMIT_WINDOW_MS,
         globalMax: env.RATE_LIMIT_GLOBAL_MAX,
         globalWindowMs: env.RATE_LIMIT_GLOBAL_WINDOW_MS,
+    },
+    cognito: {
+        region: env.AWS_REGION,
+        userPoolId: env.COGNITO_USER_POOL_ID,
+        clientId: env.COGNITO_CLIENT_ID,
+        clientSecret: env.COGNITO_CLIENT_SECRET,
     },
 };
 

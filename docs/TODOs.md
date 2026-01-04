@@ -24,6 +24,7 @@ Prior - Phase 0: Setup
     - [ ] ~~CloudFront~~ (not needed, since we're not serving static files currently)
     - [ ] ~~S3~~ (not needed, migrated CSV in batches to RDS using terminal script already)
     - [X] ElasticCache
+    - [X] Cognito
 
 ## Phase 1: Foundation & Database
 Why? getting a foundation set before doing anything else
@@ -59,18 +60,20 @@ Why? plugging things together.
 
 ## Phase 4.5: Authentication + Optimizations 
 Why? for security
-- [ ] 4.5 - Implement authentication (JWT)
-- [ ] 4.6 - Add authentication middleware
-- [ ] 4.7 - plug in rate limiting middleware
+- [X] 4.5 - Implement authentication (JWT)
+- [X] 4.6 - Add authentication middleware (Cognito)
+- [X] 4.65 - ensure user pool is configured correctly (Cognito)
+- [X] 4.7 - plug in rate limiting middleware
 - [ ] 4.8 - ~~CDN setup~~ (since we're not serving static files currently, not needed)
 
 ## Phase 5: Infra & Observability (optional)
 Why? for monitoring, logging, etc.
+Contemplating this one, time wise, might not make the cut, but will see.
 - [ ] 5.1 - Implement centralized error handling (Fastify error handler)
 - [ ] 5.2 - Add request logging middleware (with request IDs)
 - [ ] 5.3 - Add rate limiting middleware (protect against spikes)
 - [ ] 5.4 - Add metrics and monitoring hooks (request/DB/cache metrics)
-- [ ] 5.5 - Add request tracing setup
+- [ ] 5.5 - ~~Add request tracing setup~~ 
 
 ## Phase 6: Test & Documentation
 Why? self explanatory
@@ -79,4 +82,5 @@ Why? self explanatory
 - [ ] 6.3 - General Testing (integration tests?)
 
 ## Phase 7: Delivery & Costs
-- [ ] 7.1 - Provide estimates on the scalability and monthly costs.
+- [ ] 7.1 - Provide estimates on the scalability and monthly costs. Consider alternatives and tradeoffs.
+    
