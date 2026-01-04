@@ -1,1 +1,0 @@
-# Dockerfile for Airplan API, to be used with ECS/Fargate
