@@ -1,5 +1,5 @@
 import { pool } from '../config/database.js';
-import { Airport, AirportWithDistance } from '../models/airport.models.js';
+import { Airport, AirportWithDistance } from '../models/airport.model.js';
 
 // this "repository" is responsible for fetching airports from the database and returning them in the correct format, basically some pre-formed queries for the airport service. Seperated out for easy reuse and organization.
 

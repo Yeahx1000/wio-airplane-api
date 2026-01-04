@@ -4,8 +4,8 @@ import { cacheKeys } from '../cache/keys.js';
 import { findShortestPathAsync } from '../domain/routing/bfs.js';
 import { buildRoute } from '../domain/routing/path-builder.js';
 import { milesToKilometers } from '../domain/geo/units.js';
-import { RouteResponse, RouteLeg } from '../models/route.models.js';
-import { Airport } from '../models/airport.models.js';
+import { RouteResponse, RouteLeg } from '../models/route.model.js';
+import { Airport } from '../models/airport.model.js';
 
 const MAX_LEG_DISTANCE_MILES = 500;
 const MAX_LEG_DISTANCE_KM = milesToKilometers(MAX_LEG_DISTANCE_MILES);
