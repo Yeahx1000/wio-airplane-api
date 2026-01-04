@@ -9,7 +9,7 @@ Keeping this here to reference as I go through the project. Also available in th
   - RDS (Postgresql & PostGIS)
   - ECS (containerize API, Fargate, helping to scale horizontally)
   - ElasticCache (Redis)
-  - CloudFront (CDN)
+  - ~~CloudFront (CDN)~~
   - Cloudwatch (metrics, logs, naturally there when using other services on AWS)
   - Cognito (Auth & User management)
 - Docker

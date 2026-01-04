@@ -66,19 +66,20 @@ Why? for security
 - [X] 4.7 - plug in rate limiting middleware
 - [ ] 4.8 - ~~CDN setup~~ (since we're not serving static files currently, not needed)
 - [ ] 4.9 - Fix whatever is wrong with Elasticache (not necessary, but for the sake of it)
+- [ ] 4.10 - Containerize the API (Docker) and deploy to ECS
 
 ## Phase 5: Infra & Observability (optional)
 Why? for monitoring, logging, etc.
 Contemplating this one, time wise, might not make the cut, but will see.
-- [ ] 5.1 - Implement centralized error handling (Fastify error handler)
-- [ ] 5.2 - Add request logging middleware (with request IDs)
-- [ ] 5.3 - Add rate limiting middleware (protect against spikes)
+- [X] 5.1 - Implement centralized error handling (Fastify error handler)
+- [X] 5.2 - Add request logging middleware (with request IDs)
+- [X] 5.3 - Add rate limiting middleware (protect against spikes)
 - [ ] 5.4 - Add metrics and monitoring hooks (request/DB/cache metrics)
 - [ ] 5.5 - ~~Add request tracing setup~~ 
 
 ## Phase 6: Test & Documentation
 Why? self explanatory
-- [ ] 6.1 - Document API endpoints (Swagger + README)
+- [X] 6.1 - Document API endpoints (Swagger + README)
 - [ ] 6.2 - Verify performance (test 500 req/s capacity)
 - [ ] 6.3 - General Testing (integration tests?)
 
