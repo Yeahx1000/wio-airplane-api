@@ -11,5 +11,10 @@ export const cacheKeys = {
     const [id1, id2] = [fromId, toId].sort((a, b) => a - b);
     return `route:${id1}:${id2}`;
   },
+  rateLimit: {
+    ip: (ip: string, window: number) => `rate_limit:ip:${ip}:${window}`,
+    user: (userId: string, window: number) => `rate_limit:user:${userId}:${window}`,
+    global: (window: number) => `rate_limit:global:${window}`,
+  },
 };
 

@@ -21,6 +21,12 @@ const envSchema = z.object({
     REDIS_PORT: z.string().regex(/^\d+$/).transform(Number).default(6379),
     REDIS_PASSWORD: z.string().optional(),
     REDIS_DB: z.string().regex(/^\d+$/).transform(Number).default(0),
+
+    RATE_LIMIT_ENABLED: z.string().transform((val) => val !== 'false').default(true),
+    RATE_LIMIT_PER_IP: z.string().regex(/^\d+$/).transform(Number).default(100),
+    RATE_LIMIT_WINDOW_MS: z.string().regex(/^\d+$/).transform(Number).default(60000),
+    RATE_LIMIT_GLOBAL_MAX: z.string().regex(/^\d+$/).transform(Number).default(800),
+    RATE_LIMIT_GLOBAL_WINDOW_MS: z.string().regex(/^\d+$/).transform(Number).default(1000),
 });
 
 type Env = z.infer<typeof envSchema>;
@@ -60,6 +66,13 @@ export const config = {
         port: env.REDIS_PORT,
         password: env.REDIS_PASSWORD,
         db: env.REDIS_DB,
+    },
+    rateLimit: {
+        enabled: env.RATE_LIMIT_ENABLED,
+        perIp: env.RATE_LIMIT_PER_IP,
+        windowMs: env.RATE_LIMIT_WINDOW_MS,
+        globalMax: env.RATE_LIMIT_GLOBAL_MAX,
+        globalWindowMs: env.RATE_LIMIT_GLOBAL_WINDOW_MS,
     },
 };
 

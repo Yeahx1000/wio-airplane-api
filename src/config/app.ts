@@ -1,8 +1,18 @@
 import { FastifyInstance } from 'fastify';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
+import { rateLimit } from '../http/middleware/rate-limit.js';
+import { logger } from '../http/middleware/logger.js';
+import { errorHandler } from '../http/middleware/error-handler.js';
 
 export const configureApp = async (app: FastifyInstance) => {
+    app.setErrorHandler(errorHandler);
+
+    app.addHook('onRequest', async (req, res) => {
+        req.startTime = Date.now();
+        await rateLimit(req, res);
+    });
+    app.addHook('onResponse', logger);
     await app.register(fastifySwagger, {
         openapi: {
             openapi: '3.0.0',
