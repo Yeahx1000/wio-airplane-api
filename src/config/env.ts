@@ -21,6 +21,7 @@ const envSchema = z.object({
     REDIS_PORT: z.string().regex(/^\d+$/).transform(Number).default(6379),
     REDIS_PASSWORD: z.string().optional(),
     REDIS_DB: z.string().regex(/^\d+$/).transform(Number).default(0),
+    REDIS_TLS: z.string().transform((val) => val === 'true').default(false),
 
     RATE_LIMIT_ENABLED: z.string().transform((val) => val !== 'false').default(true),
     RATE_LIMIT_PER_IP: z.string().regex(/^\d+$/).transform(Number).default(100),
@@ -71,6 +72,7 @@ export const config = {
         port: env.REDIS_PORT,
         password: env.REDIS_PASSWORD,
         db: env.REDIS_DB,
+        tls: env.REDIS_TLS,
     },
     rateLimit: {
         enabled: env.RATE_LIMIT_ENABLED,

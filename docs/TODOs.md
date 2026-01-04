@@ -25,7 +25,7 @@ Prior - Phase 0: Setup
   - [X] CloudWatch
   - [ ] ~~CloudFront~~ (not needed, since we're not serving static files currently)
   - [ ] ~~S3~~ (not needed, migrated CSV in batches to RDS using terminal script already)
-  - [X] ElasticCache
+  - [X] ElastiCache
   - [X] Cognito
 
 ## Phase 1: Foundation & Database
@@ -79,7 +79,8 @@ Why? for security
 - [ ] 4.8 - ~~CDN setup~~ (since we're not serving static files currently, not needed)
 - [ ] 4.9 - Fix whatever is wrong with Elasticache, crashing on startup (not necessary, but for the sake of it)
 - [ ] 4.10 - Containerize the API (Docker) and deploy to ECS
-- [ ] 4.11 - Complete Swagger UI examples
+- [X] 4.11 - Complete Swagger UI examples
+- [ ] 4.12 - Fix airports/countries route crashing when requests sent.
 
 ## Phase 5: Infra & Observability (optional)
 

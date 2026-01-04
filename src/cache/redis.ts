@@ -2,6 +2,7 @@ import Redis from 'ioredis';
 
 export class RedisClient {
     private readonly client: Redis;
+    private readonly parsedHost: string;
     private connectionAttempted = false;
     private isAvailable = false;
     private connectionFailed = false;
@@ -11,15 +12,22 @@ export class RedisClient {
         port: number;
         password?: string;
         db?: number;
+        tls?: boolean;
     }) {
-        const host = this.parseHost(config.host);
+        this.parsedHost = this.parseHost(config.host);
         const port = config.port;
 
+        const isLocalhost = this.parsedHost === 'localhost' || this.parsedHost === '127.0.0.1' || this.parsedHost.startsWith('127.');
+        const shouldUseTls = config.tls && !isLocalhost;
+
         this.client = new Redis({
-            host,
+            host: this.parsedHost,
             port,
             password: config.password,
             db: config.db,
+            tls: shouldUseTls ? {
+                rejectUnauthorized: false,
+            } : undefined,
             retryStrategy: (times) => {
                 if (times > 3 || this.connectionFailed) {
                     return null;
@@ -30,10 +38,12 @@ export class RedisClient {
             maxRetriesPerRequest: 1,
             enableOfflineQueue: false,
             lazyConnect: true,
-            connectTimeout: 5000,
+            connectTimeout: 10000,
+            keepAlive: 30000,
         });
 
         this.client.on('error', (err) => {
+            console.error('Redis client error:', err.message, (err as any).code, err.stack);
             if (this.connectionFailed) {
                 return;
             }
@@ -71,13 +81,17 @@ export class RedisClient {
 
     async connect(): Promise<void> {
         if (this.connectionFailed) {
+            console.warn('Redis connection previously failed, skipping reconnect attempt');
             return;
         }
         if (!this.connectionAttempted) {
             this.connectionAttempted = true;
             try {
+                console.log(`Attempting Redis connection to ${this.parsedHost}:${this.config.port}${this.config.tls ? ' with TLS' : ' (no TLS)'}`);
                 await this.client.connect();
+                console.log('Redis connection established');
             } catch (error) {
+                console.error('Redis connection failed:', error);
                 this.connectionFailed = true;
             }
         }

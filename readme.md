@@ -7,6 +7,7 @@ An API that returns airports within a given radius of a specific coordinate.
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 - [Using Docker](#using-docker)
+- [Using Redis](#using-redis)
 - [How to use the API](#how-to-use-the-api)
 - [How to use Swagger UI for testing](#how-to-use-swagger-ui-for-testing)
 - [Authentication](#authentication)
@@ -22,7 +23,7 @@ These weren't all used given the scope, but at scale they would be theoretically
   - ~~S3 (store CSV)~~
   - RDS (Postgresql & PostGIS)
   - ECS (containerize API, Fargate, helping to scale horizontally)
-  - ElasticCache (Redis)
+  - ElastiCache (Redis, not needed at this scope but for the sake of it)
   - ~~CloudFront (CDN)~~
   - Cloudwatch (metrics, logs, naturally there when using other services on AWS)
   - Cognito (Auth & User management)
@@ -101,6 +102,17 @@ docs for more detail on building and pushing.
 ### References
 
 - [Docker's Node.js guide](https://docs.docker.com/language/nodejs/)
+
+## Using Redis
+
+When running in production, Elasticache is intended to be used as a cache layer, but other services can be used. comment out the .env for `REDIS_HOST=localhost` and uncomment the following:
+
+```bash
+# REDIS_HOST=localhost # use this when running locally
+REDIS_HOST=your-elasticache-or-other-enpoint # use this when running in production on VPC
+```
+
+the app should be able to infer whether to use TLS or not based on the endpoint (whether using a local redis instance or in production), but you can also set `REDIS_TLS=true` if needed.
 
 ## How to use the API
 

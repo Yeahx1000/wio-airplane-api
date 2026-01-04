@@ -21,7 +21,7 @@ async function start() {
         fastify.log.warn('Redis connection failed, continuing without cache');
       }
     } catch (error) {
-      fastify.log.warn('Redis unavailable, continuing without cache');
+      fastify.log.warn(`Redis unavailable: ${error instanceof Error ? error.message : String(error)}, continuing without cache`);
     }
 
     await configureApp(fastify);

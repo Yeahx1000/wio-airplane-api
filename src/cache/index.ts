@@ -9,5 +9,6 @@ export const redisClient = new RedisClient({
     port: config.redis.port,
     password: config.redis.password,
     db: config.redis.db,
+    tls: config.redis.tls,
 });
 
