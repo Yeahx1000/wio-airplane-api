@@ -75,6 +75,15 @@ then, run the server:
 npm run start
 ```
 
+if you need to fill the database with data, run:
+
+```bash
+npm run ingest
+```
+
+> [!IMPORTANT]
+STRONGLY RECOMMEND: run `npm run warm-cache` before running the server, to warm the cache with the first batch of airports. if not done, requests, particularly to `/airports/route` will be much slower at first (about 1-3mins vs 1-10s).
+
 That's mostly it. The app will be running on port 3000 by default.
 
 ## Using Docker
