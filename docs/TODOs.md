@@ -79,6 +79,7 @@ Why? for security
 - [ ] 4.8 - ~~CDN setup~~ (since we're not serving static files currently, not needed)
 - [ ] 4.9 - Fix whatever is wrong with Elasticache, crashing on startup (not necessary, but for the sake of it)
 - [ ] 4.10 - Containerize the API (Docker) and deploy to ECS
+- [ ] 4.11 - Complete Swagger UI examples
 
 ## Phase 5: Infra & Observability (optional)
 

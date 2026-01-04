@@ -16,9 +16,26 @@ export const registerAuthRoutes = (fastify: FastifyInstance) => {
         schema: {
             tags: ['Authentication'],
             description: 'Login with email and password',
-            body: zodToFastifySchema(loginSchema),
+            body: {
+                ...zodToFastifySchema(loginSchema),
+                examples: [
+                    {
+                        usernameOrEmail: 'user@example.com',
+                        password: 'password123'
+                    }
+                ]
+            },
             response: {
-                200: zodToFastifySchema(tokenResponseSchema),
+                200: {
+                    ...zodToFastifySchema(tokenResponseSchema),
+                    examples: [
+                        {
+                            accessToken: 'eyJraWQiOiJ...',
+                            refreshToken: 'eyJjdHkiOiJ...',
+                            idToken: 'eyJraWQiOiJ...'
+                        }
+                    ]
+                },
                 401: {
                     type: 'object',
                     properties: {
@@ -35,9 +52,25 @@ export const registerAuthRoutes = (fastify: FastifyInstance) => {
         schema: {
             tags: ['Authentication'],
             description: 'Refresh access token using refresh token',
-            body: zodToFastifySchema(refreshTokenSchema),
+            body: {
+                ...zodToFastifySchema(refreshTokenSchema),
+                examples: [
+                    {
+                        refreshToken: 'eyJjdHkiOiJSUzI1NiIsImtpZCI6IjEyMzQ1NiJ9...'
+                    }
+                ]
+            },
             response: {
-                200: zodToFastifySchema(tokenResponseSchema),
+                200: {
+                    ...zodToFastifySchema(tokenResponseSchema),
+                    examples: [
+                        {
+                            accessToken: 'eyJraWQiOiJ...',
+                            refreshToken: 'eyJjdHkiOiJ...',
+                            idToken: 'eyJraWQiOiJ...'
+                        }
+                    ]
+                },
                 401: {
                     type: 'object',
                     properties: {
@@ -58,7 +91,16 @@ export const registerAuthRoutes = (fastify: FastifyInstance) => {
             description: 'Get current authenticated user',
             security: [{ bearerAuth: [] }],
             response: {
-                200: zodToFastifySchema(userResponseSchema),
+                200: {
+                    ...zodToFastifySchema(userResponseSchema),
+                    examples: [
+                        {
+                            userId: '123e4567-e89b-12d3-a456-426614174000',
+                            email: 'user@example.com',
+                            username: 'johndoe'
+                        }
+                    ]
+                },
                 401: {
                     type: 'object',
                     properties: {
