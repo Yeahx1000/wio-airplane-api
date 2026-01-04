@@ -23,7 +23,7 @@ These weren't all used given the scope, but at scale they would be theoretically
   - ~~S3 (store CSV)~~
   - RDS (Postgresql & PostGIS)
   - ECS (containerize API, Fargate, helping to scale horizontally)
-  - ElastiCache (Redis, not needed at this scope but for the sake of it)
+  - ElastiCache (Redis)
   - ~~CloudFront (CDN)~~
   - Cloudwatch (metrics, logs, naturally there when using other services on AWS)
   - Cognito (Auth & User management)

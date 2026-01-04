@@ -18,13 +18,14 @@ Keeping this here to reference as I go through the project. Also available in th
 
 ## Misc Tools Used
 
-### Internal "Testing" tools used:
+### Internal "Testing" tools used
+
 - pgAdmin
 - Postman
 - ?? (still deciding on in editor tools)
 
-### research tools (mainly for architectural decisions):
+### research tools (mainly for architectural decisions)
+
 - Google
 - chatGPT
 - NotebookLLM
-

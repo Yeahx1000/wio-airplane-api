@@ -1,6 +1,7 @@
-## Tradeoffs
-    Brain dump of tradeoffs for this project:
-    
+# Tradeoffs
+
+Brain dump of tradeoffs for this project:
+
 - Typescript vs JS - strongly typed language, forces to think about data validation during development
 - Zod vs Yup - Typescript based API, better integration
 - AWS vs other Cloud Providers - Costs more, but reliability at scale, for airport API’s, most trustworthy, services cover main needs under one roof
@@ -12,6 +13,6 @@
 - Cognito vs custom auth or other providers - Keeping it in AWS ecosystem, 60%+ reduction in lines of code, easier to scale, secure, trustworthy.
 - BFS vs DFS - since looking for shortest path, BFS is more efficient.
 
-### Some thoughts
+## Some thoughts
 
 A downside of some of the tradeoffs made here is vender lock-in to AWS, which can also be more expensive than alternatives, but given the needs for reliability and scalability, it's a tradeoff worth making, in my opinion.
