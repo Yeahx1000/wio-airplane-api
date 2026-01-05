@@ -4,14 +4,27 @@ An API that returns airports within a given radius of a specific coordinate.
 
 ## Table of Contents
 
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Using Docker](#using-docker)
-- [Using Redis](#using-redis)
-- [How to use the API](#how-to-use-the-api)
-- [How to use Swagger UI for testing](#how-to-use-swagger-ui-for-testing)
-- [Authentication](#authentication)
-- [Airport Endpoints](#airport-endpoints)
+- [Airplane API](#airplane-api)
+  - [Table of Contents](#table-of-contents)
+  - [Tech Stack](#tech-stack)
+  - [Installation](#installation)
+  - [Using Docker](#using-docker)
+  - [Using Redis](#using-redis)
+  - [How to use the API](#how-to-use-the-api)
+  - [How to use Swagger UI for testing](#how-to-use-swagger-ui-for-testing)
+  - [API Routes](#api-routes)
+    - [Healh Check Endopoint](#healh-check-endopoint)
+      - [`GET /health`](#get-health)
+    - [Auth Endpoints](#auth-endpoints)
+      - [`POST /auth/login`](#post-authlogin)
+      - [`POST /auth/refresh`](#post-authrefresh)
+      - [`GET /auth/me`](#get-authme)
+    - [Airport Enpoints](#airport-enpoints)
+      - [`GET /airports/:id`](#get-airportsid)
+      - [`GET /airports/radius`](#get-airportsradius)
+      - [`GET /airports/distance`](#get-airportsdistance)
+      - [`GET /airports/countries`](#get-airportscountries)
+      - [`GET /airports/route`](#get-airportsroute)
 
 ## Tech Stack
 
@@ -31,15 +44,15 @@ These weren't all used given the scope, but at scale they would be theoretically
 - Zod (data validation)
 - Swagger (API documentation)
 
-## Misc Tools Used
+## Misc Tools Used <!-- omit from toc -->
 
-### Internal "Testing" tools used
+### Internal "Testing" tools used <!-- omit from toc -->
 
 - pgAdmin
 - Postman
 - ?? (still deciding on in editor tools)
 
-### Research tools (mainly for architectural decisions)
+### Research tools (mainly for architectural decisions) <!-- omit from toc -->
 
 - Google
 - chatGPT
@@ -88,14 +101,14 @@ That's mostly it. The app will be running on port 3000 by default.
 
 ## Using Docker
 
-### Building and running your application
+### Building and running your application <!-- omit from toc -->
 
 When you're ready to build and run your app, start by running:
 `docker compose up --build`.
 
 The app will be available at `http://localhost:3000`
 
-### Deploying app to the cloud
+### Deploying app to the cloud <!-- omit from toc -->
 
 First, build your image, e.g.: `docker build -t myapp .`.
 If your cloud uses a different CPU architecture than your development
@@ -108,7 +121,7 @@ Then, push it to your registry, e.g. `docker push myregistry.com/myapp`.
 Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharing/)
 docs for more detail on building and pushing.
 
-### References
+### References <!-- omit from toc -->
 
 - [Docker's Node.js guide](https://docs.docker.com/language/nodejs/)
 
@@ -180,11 +193,39 @@ This is a quick guide on how to use Swagger to interact with the API endpoints f
 
 in dev mode, navigate to `localhost:3000/docs` to view the Swagger UI. If I get around to it, I may have a live api domain link, but for now, must use your local machine.
 
-## Authentication
+### Other Routes Available in Swagger UI <!-- omit from toc -->
+
+## API Routes
+
+### Healh Check Endopoint
+
+#### `GET /health`
+
+No authentication required. Returns service health status.
+
+```bash
+curl http://localhost:3000/health
+```
+
+**Response:**
+
+```json
+{
+  "status": "healthy",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "database": "connected",
+  "redis": "connected"
+}
+```
+
+### Auth Endpoints
+
+> [!WARNING]
+You must authhenticate to use other routes in the API. This step is required
 
 to use the API, you'll need to authenticate with Cognito.
 
-1. Assuming you have a Cognito user pool set up, you can use the following credentials to login:
+Assuming you have a Cognito user pool set up, you can use the following credentials to login:
 
 ```json
 {
@@ -193,14 +234,86 @@ to use the API, you'll need to authenticate with Cognito.
 }
 ```
 
-2. take the access token returned from the login request and add it to the `Authorization` header of your requests.
+#### `POST /auth/login`
+
+**Headers:**
+
+```json
+Content-Type: application/json
+```
+
+**Body:**
+
+Please ensure you've recieved a username and password from your admin.
+
+```json
+{
+  "usernameOrEmail": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+
+```json
+{
+  "accessToken": "eyJraWQiOiJ...",
+  "refreshToken": "eyJjdHkiOiJ...",
+  "idToken": "eyJraWQiOiJ..."
+}
+```
+
+#### `POST /auth/refresh`
+
+**Headers:**
+
+```json
+Content-Type: application/json
+```
+
+**Body:**
+
+```json
+{
+  "refreshToken": "eyJjdHkiOiJ..."
+}
+```
+
+**Response:**
+
+```json
+{
+  "accessToken": "eyJraWQiOiJ...",
+  "idToken": "eyJraWQiOiJ..."
+}
+```
+
+#### `GET /auth/me`
+
+**Headers:**
+
+```json
+Authorization: Bearer <accessToken>
+```
+
+**Response:**
+
+```json
+{
+  "userId": "123e4567-e89b-12d3-a456-426614174000",
+  "email": "user@example.com",
+  "username": "johndoe"
+}
+```
+
+Take the access token returned from the login request and add it to the `Authorization` header of your requests.
 
 From here on, you can use the API endpoints as you would normally. There are 4 endpoints mainly for
 testing:
 
-## Airport Endpoints
+### Airport Enpoints
 
-### `GET /airports/:id`
+#### `GET /airports/:id`
 
 Get airport details by ID.
 
@@ -218,7 +331,7 @@ GET /airports/123
 
 ---
 
-### `GET /airports/radius`
+#### `GET /airports/radius`
 
 Find all airports within a specified radius of a coordinate point.
 
@@ -238,7 +351,7 @@ GET /airports/radius?lat=40.7128&lon=-74.0060&radius=100
 
 ---
 
-### `GET /airports/distance`
+#### `GET /airports/distance`
 
 Calculate the distance between two airports in kilometers.
 
@@ -257,7 +370,7 @@ GET /airports/distance?id1=1&id2=2
 
 ---
 
-### `GET /airports/countries`
+#### `GET /airports/countries`
 
 Find the closest pair of airports between two countries.
 
@@ -280,7 +393,7 @@ GET /airports/countries?country1=United States&country2=Canada
 
 ---
 
-### `GET /airports/route`
+#### `GET /airports/route`
 
 Find the shortest route between two airports. Routes are calculated with a maximum leg distance of 500 miles.
 
