@@ -82,6 +82,7 @@ Why? for security
 - [X] 4.11 - Complete Swagger UI examples
 - [X] 4.12 - Fix airports/countries route crashing when requests sent.
 - [X] 4.13 - Fix airports/routes route hang, algo issue, finishes, but takes way too long.
+- [X] 4.14 - swagger ui not in docker container, fix.
 
 ## Phase 5: Infra & Observability (optional)
 

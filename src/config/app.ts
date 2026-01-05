@@ -1,36 +1,15 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import fastifyHelmet from '@fastify/helmet';
 import { rateLimit } from '../http/middleware/rate-limit.js';
 import { logger } from '../http/middleware/logger.js';
 import { errorHandler } from '../http/middleware/error-handler.js';
-import { config } from './env.js';
 
 export const configureApp = async (app: FastifyInstance) => {
     try {
         console.log('Setting error handler...');
         app.setErrorHandler(errorHandler);
-
-        console.log('Registering helmet...');
-        await app.register(fastifyHelmet, {
-            contentSecurityPolicy: {
-                directives: {
-                    defaultSrc: ["'self'"],
-                    styleSrc: ["'self'", "'unsafe-inline'"],
-                    scriptSrc: ["'self'", "'unsafe-inline'"],
-                    imgSrc: ["'self'", "data:", "https:"],
-                    fontSrc: ["'self'", "data:"],
-                },
-            },
-        });
-
-        console.log('Adding hooks...');
-        app.addHook('onRequest', async (req, res) => {
-            req.startTime = Date.now();
-            await rateLimit(req, res);
-        });
-        app.addHook('onResponse', logger);
 
         console.log('Registering swagger...');
         await app.register(fastifySwagger, {
@@ -43,8 +22,12 @@ export const configureApp = async (app: FastifyInstance) => {
                 },
                 servers: [
                     {
-                        url: `http://${config.server.host}:${config.server.port}`,
-                        description: 'API Server',
+                        url: process.env.NODE_ENV === 'production'
+                            ? '/'
+                            : 'http://localhost:3000',
+                        description: process.env.NODE_ENV === 'production'
+                            ? 'Production server'
+                            : 'Development server',
                     },
                 ],
                 components: {
@@ -66,17 +49,31 @@ export const configureApp = async (app: FastifyInstance) => {
                 docExpansion: 'list',
                 deepLinking: false,
             },
-            uiHooks: {
-                onRequest: function (request, reply, next) {
-                    next();
-                },
-                preHandler: function (request, reply, next) {
-                    next();
-                },
-            },
             staticCSP: true,
             transformStaticCSP: (header) => header,
         });
+
+        console.log('Registering helmet...');
+        await app.register(fastifyHelmet, {
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    styleSrc: ["'self'", "'unsafe-inline'"],
+                    scriptSrc: ["'self'", "'unsafe-inline'"],
+                    imgSrc: ["'self'", "data:", "https:"],
+                    fontSrc: ["'self'", "data:"],
+                    connectSrc: ["'self'"],
+                },
+            },
+        });
+
+        console.log('Adding hooks...');
+        app.addHook('onRequest', async (req: FastifyRequest, res: FastifyReply) => {
+            req.startTime = Date.now();
+            await rateLimit(req, res);
+        });
+        app.addHook('onResponse', logger);
+
         console.log('App configuration complete');
     } catch (error) {
         console.error('Error in configureApp:', error);
@@ -86,4 +83,3 @@ export const configureApp = async (app: FastifyInstance) => {
         throw error;
     }
 };
-
