@@ -7,8 +7,10 @@ env:
     IMAGE_TAG: latest
     ENV_FILE_S3_BUCKET: cf-templates--ev9ssw1gjegn-us-east-1
     ENV_FILE_S3_KEY: wio-airplane-api/.env.production
+    DOCKER_BUILDKIT: 1
+    COMPOSE_DOCKER_CLI_BUILD: 1
   parameter-store:
-    ECR_REPOSITORY_URI: /codebuild/242201267826.dkr.ecr.us-east-1.amazonaws.com/wio-airport-api
+    ECR_REPOSITORY_URI: /codebuild/ecr-repository-uri
 
 phases:
   pre_build:
@@ -24,7 +26,7 @@ phases:
 
   build:
     commands:
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - DOCKER_BUILDKIT=1 docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $ECR_REPOSITORY_URI:$IMAGE_TAG
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $ECR_REPOSITORY_URI:latest
 
@@ -40,4 +42,3 @@ phases:
 artifacts:
   files:
     - imagedefinitions.json
-
