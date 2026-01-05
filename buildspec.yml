@@ -1,0 +1,43 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: us-east-1
+    IMAGE_REPO_NAME: wio-airplane-api
+    IMAGE_TAG: latest
+    ENV_FILE_S3_BUCKET: cf-templates--ev9ssw1gjegn-us-east-1
+    ENV_FILE_S3_KEY: wio-airplane-api/.env.production
+  parameter-store:
+    ECR_REPOSITORY_URI: /codebuild/242201267826.dkr.ecr.us-east-1.amazonaws.com/wio-airport-api
+
+phases:
+  pre_build:
+    commands:
+      - echo Fetching environment file from S3...
+      - aws s3 cp s3://$ENV_FILE_S3_BUCKET/$ENV_FILE_S3_KEY .env || echo "No .env file found, using environment variables"
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${IMAGE_TAG:-$COMMIT_HASH}
+      - echo Build started on `date`
+      - echo Building the Docker image...
+
+  build:
+    commands:
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $ECR_REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $ECR_REPOSITORY_URI:latest
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+      - docker push $ECR_REPOSITORY_URI:latest
+      - echo Writing image definitions file...
+      - printf '{"ImageURI":"%s"}' $ECR_REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
+

@@ -56,7 +56,7 @@ async function findUsernameByEmail(email: string): Promise<string | null> {
         });
 
         const response = await client.send(command);
-        
+
         if (response.Users && response.Users.length > 0) {
             return response.Users[0].Username || null;
         }
@@ -69,7 +69,7 @@ async function findUsernameByEmail(email: string): Promise<string | null> {
 
 export async function login(usernameOrEmail: string, password: string): Promise<CognitoTokens> {
     let username = usernameOrEmail;
-    
+
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(usernameOrEmail);
     if (isEmail) {
         const foundUsername = await findUsernameByEmail(usernameOrEmail);
