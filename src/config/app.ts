@@ -5,6 +5,7 @@ import fastifyHelmet from '@fastify/helmet';
 import { rateLimit } from '../http/middleware/rate-limit.js';
 import { logger } from '../http/middleware/logger.js';
 import { errorHandler } from '../http/middleware/error-handler.js';
+import { config } from './env.js';
 
 export const configureApp = async (app: FastifyInstance) => {
     try {
@@ -17,8 +18,9 @@ export const configureApp = async (app: FastifyInstance) => {
                 directives: {
                     defaultSrc: ["'self'"],
                     styleSrc: ["'self'", "'unsafe-inline'"],
-                    scriptSrc: ["'self'"],
+                    scriptSrc: ["'self'", "'unsafe-inline'"],
                     imgSrc: ["'self'", "data:", "https:"],
+                    fontSrc: ["'self'", "data:"],
                 },
             },
         });
@@ -41,8 +43,8 @@ export const configureApp = async (app: FastifyInstance) => {
                 },
                 servers: [
                     {
-                        url: 'http://localhost:3000',
-                        description: 'Development server',
+                        url: `http://${config.server.host}:${config.server.port}`,
+                        description: 'API Server',
                     },
                 ],
                 components: {
