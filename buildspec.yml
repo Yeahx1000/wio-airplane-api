@@ -16,14 +16,19 @@ phases:
   pre_build:
     commands:
       - echo Fetching environment file from S3...
-      - aws s3 cp s3://$ENV_FILE_S3_BUCKET/$ENV_FILE_S3_KEY .env || echo "No .env file found, using environment variables"
+      - |
+        aws s3 cp s3://$ENV_FILE_S3_BUCKET/$ENV_FILE_S3_KEY .env || echo "No .env file found, using environment variables"
       - echo Logging in to Amazon ECR...
-      - echo "ECR_REPOSITORY_URI: $ECR_REPOSITORY_URI"
-      - ECR_REGISTRY=$(echo $ECR_REPOSITORY_URI | cut -d'/' -f1)
-      - echo "ECR_REGISTRY: $ECR_REGISTRY"
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_TAG=${IMAGE_TAG:-$COMMIT_HASH}
+      - echo ECR_REPOSITORY_URI: $ECR_REPOSITORY_URI
+      - |
+        ECR_REGISTRY=$(echo $ECR_REPOSITORY_URI | cut -d'/' -f1)
+      - echo ECR_REGISTRY: $ECR_REGISTRY
+      - |
+        aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+      - |
+        COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - |
+        IMAGE_TAG=${IMAGE_TAG:-$COMMIT_HASH}
       - echo Build started on `date`
       - echo Building the Docker image...
 
@@ -40,7 +45,8 @@ phases:
       - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
       - docker push $ECR_REPOSITORY_URI:latest
       - echo Writing image definitions file...
-      - printf '{"ImageURI":"%s"}' $ECR_REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - |
+        printf '{"ImageURI":"%s"}' $ECR_REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
