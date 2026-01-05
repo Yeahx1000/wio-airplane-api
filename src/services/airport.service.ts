@@ -2,6 +2,7 @@ import { AirportRepository } from '../repositories/airport.repository.js';
 import { redisClient } from '../cache/index.js';
 import { cacheKeys } from '../cache/keys.js';
 import { Airport, AirportWithDistance, CountryComparison } from '../models/airport.model.js';
+import { recordCacheHit, recordCacheMiss } from '../observability/metrics.js';
 
 const CACHE_TTL = {
     AIRPORT: 3600,
@@ -20,9 +21,11 @@ export class AirportService {
         const cacheKey = cacheKeys.airport(id);
         const cached = await redisClient.getJSON<Airport>(cacheKey);
         if (cached) {
+            recordCacheHit(cacheKey);
             return cached;
         }
 
+        recordCacheMiss(cacheKey);
         const airport = await this.repository.findById(id);
         if (airport) {
             await redisClient.setJSON(cacheKey, airport, CACHE_TTL.AIRPORT);
@@ -34,9 +37,11 @@ export class AirportService {
         const cacheKey = cacheKeys.airportsInRadius(lat, lon, radiusKm);
         const cached = await redisClient.getJSON<AirportWithDistance[]>(cacheKey);
         if (cached) {
+            recordCacheHit(cacheKey);
             return cached;
         }
 
+        recordCacheMiss(cacheKey);
         const airports = await this.repository.findByRadius(lat, lon, radiusKm);
         await redisClient.setJSON(cacheKey, airports, CACHE_TTL.AIRPORTS_IN_RADIUS);
         return airports;
@@ -46,9 +51,11 @@ export class AirportService {
         const cacheKey = cacheKeys.airportDistance(id1, id2);
         const cached = await redisClient.getJSON<number>(cacheKey);
         if (cached !== null) {
+            recordCacheHit(cacheKey);
             return cached;
         }
 
+        recordCacheMiss(cacheKey);
         const distance = await this.repository.findDistance(id1, id2);
         if (distance !== null) {
             await redisClient.setJSON(cacheKey, distance, CACHE_TTL.DISTANCE);
@@ -60,9 +67,11 @@ export class AirportService {
         const cacheKey = cacheKeys.airportsByCountry(country);
         const cached = await redisClient.getJSON<Airport[]>(cacheKey);
         if (cached) {
+            recordCacheHit(cacheKey);
             return cached;
         }
 
+        recordCacheMiss(cacheKey);
         const airports = await this.repository.findByCountry(country);
         await redisClient.setJSON(cacheKey, airports, CACHE_TTL.AIRPORTS_BY_COUNTRY);
         return airports;
@@ -76,9 +85,11 @@ export class AirportService {
         const cacheKey = cacheKeys.countryComparison(country1, country2);
         const cached = await redisClient.getJSON<CountryComparison>(cacheKey);
         if (cached) {
+            recordCacheHit(cacheKey);
             return cached;
         }
 
+        recordCacheMiss(cacheKey);
         const comparison = await this.repository.findClosestAirportsBetweenCountries(country1, country2);
         if (!comparison) {
             return null;

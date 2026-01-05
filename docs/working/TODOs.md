@@ -78,7 +78,7 @@ Why? for security
 - [X] 4.7 - plug in rate limiting middleware
 - [ ] 4.8 - ~~CDN setup~~ (since we're not serving static files currently, not needed)
 - [X] 4.9 - Fix whatever is wrong with Elasticache, crashing on startup (not necessary, but for the sake of it)
-- [ ] 4.10 - Containerize the API (Docker) and deploy to ECS
+- [X] 4.10 - Containerize the API (Docker) and deploy to ECS
 - [X] 4.11 - Complete Swagger UI examples
 - [X] 4.12 - Fix airports/countries route crashing when requests sent.
 - [X] 4.13 - Fix airports/routes route hang, algo issue, finishes, but takes way too long.
@@ -91,7 +91,7 @@ Contemplating this one, time wise, might not make the cut, but will see.
 - [X] 5.1 - Implement centralized error handling (Fastify error handler)
 - [X] 5.2 - Add request logging middleware (with request IDs)
 - [X] 5.3 - Add rate limiting middleware (protect against spikes)
-- [ ] 5.4 - Add metrics and monitoring hooks (request/DB/cache metrics)
+- [X] 5.4 - Add metrics and monitoring hooks (request/DB/cache metrics)
 - [ ] 5.5 - ~~Add request tracing setup~~
 
 ## Phase 6: Test & Documentation
