@@ -2,7 +2,7 @@
 
 ARG NODE_VERSION=24.0.2
 
-FROM node:${NODE_VERSION}-alpine AS base
+FROM public.ecr.aws/docker/library/node:${NODE_VERSION}-alpine AS base
 
 WORKDIR /usr/src/app
 
