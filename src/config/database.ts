@@ -53,6 +53,11 @@ export const initializeDatabase = async () => {
         await client.query('SELECT 1');
         client.release();
 
+        if (config.nodeEnv === 'production') {
+            console.log('Skipping migrations in production (assuming schema already exists)');
+            return;
+        }
+
         const sql = readFileSync(
             join(process.cwd(), 'misc', 'data', 'migrations', 'create_airports_table.sql'),
             'utf8'

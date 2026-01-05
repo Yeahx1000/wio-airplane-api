@@ -6,34 +6,59 @@ import { redisClient } from './cache/index.js';
 import { initializeDatabase } from './config/database.js';
 
 const fastify = Fastify({
-  logger: config.nodeEnv !== 'production',
+  logger: true,
   requestTimeout: 60000,
 });
 
 async function start() {
   try {
+    console.log('Starting server...');
     await initializeDatabase();
+    console.log('Database initialized');
 
     try {
       const isRedisReady = await redisClient.ping();
       if (isRedisReady) {
-        fastify.log.info('Redis connected successfully');
+        console.log('Redis connected successfully');
       } else {
-        fastify.log.warn('Redis connection failed, continuing without cache');
+        console.warn('Redis connection failed, continuing without cache');
       }
     } catch (error) {
-      fastify.log.warn(`Redis unavailable: ${error instanceof Error ? error.message : String(error)}, continuing without cache`);
+      console.warn(`Redis unavailable: ${error instanceof Error ? error.message : String(error)}, continuing without cache`);
     }
 
+    console.log('Configuring app...');
     await configureApp(fastify);
+    console.log('App configured');
+
+    console.log('Registering routes...');
     registerRoutes(fastify);
+    console.log('Routes registered');
 
     await fastify.listen({ port: config.server.port, host: config.server.host });
-    fastify.log.info(`Server listening on ${config.server.host}:${config.server.port}`);
+    console.log(`Server listening on ${config.server.host}:${config.server.port}`);
   } catch (err) {
-    fastify.log.error(err);
+    console.error('Server startup failed:', err);
+    if (err instanceof Error) {
+      console.error('Error stack:', err.stack);
+    }
     process.exit(1);
   }
 }
+
+const shutdown = async (signal: string) => {
+  console.log(`${signal} received, shutting down gracefully...`);
+  try {
+    await fastify.close();
+    console.log('Server closed');
+    process.exit(0);
+  } catch (err) {
+    console.error('Error during shutdown:', err);
+    process.exit(1);
+  }
+};
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 
 start();

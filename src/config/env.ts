@@ -1,7 +1,9 @@
 import { config as dotenvConfig } from 'dotenv';
 import { z } from 'zod';
 
-dotenvConfig();
+if (process.env.NODE_ENV !== 'production') {
+    dotenvConfig();
+}
 
 // this is the schema for validating the .env variables, it's making sure all required vars are 1. present and 2. adhering to type.
 
