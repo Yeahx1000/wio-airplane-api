@@ -8,6 +8,8 @@ This file is to keep a record of the API endpoints available in one place, can s
   - [Table of Contents](#table-of-contents)
     - [Healh Check Endopoint](#healh-check-endopoint)
       - [`GET /health`](#get-health)
+    - [Metrics Endpoint](#metrics-endpoint)
+      - [`GET /metrics`](#get-metrics)
     - [Auth Endpoints](#auth-endpoints)
       - [`POST /auth/login`](#post-authlogin)
       - [`POST /auth/refresh`](#post-authrefresh)
@@ -39,6 +41,13 @@ curl http://localhost:3000/health
   "redis": "connected"
 }
 ```
+
+### Metrics Endpoint
+
+> [!NOTE]
+This endpoint is commented out by default, uncomment to enable metrics collection and expose endpoint.
+
+#### `GET /metrics`
 
 ### Auth Endpoints
 
@@ -129,6 +138,8 @@ Authorization: Bearer <accessToken>
 ```
 
 Take the access token returned from the login request and add it to the `Authorization` header of your requests.
+
+No authentication required. Returns application metrics.
 
 From here on, you can use the API endpoints as you would normally. There are 4 endpoints mainly for
 testing:

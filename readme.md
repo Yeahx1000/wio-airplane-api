@@ -15,6 +15,8 @@ An API that returns airports within a given radius of a specific coordinate.
   - [API Routes](#api-routes)
     - [Healh Check Endopoint](#healh-check-endopoint)
       - [`GET /health`](#get-health)
+    - [Metrics Endpoint](#metrics-endpoint)
+      - [`GET /metrics`](#get-metrics)
     - [Auth Endpoints](#auth-endpoints)
       - [`POST /auth/login`](#post-authlogin)
       - [`POST /auth/refresh`](#post-authrefresh)
@@ -217,6 +219,13 @@ curl http://localhost:3000/health
   "redis": "connected"
 }
 ```
+
+### Metrics Endpoint
+
+> [!NOTE]
+This endpoint is commented out by default, uncomment to enable metrics collection and expose endpoint.
+
+#### `GET /metrics`
 
 ### Auth Endpoints
 

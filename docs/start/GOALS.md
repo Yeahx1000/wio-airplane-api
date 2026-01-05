@@ -1,20 +1,23 @@
-# The [redacted] Business Logic + API 
+# The [redacted] Business Logic + API
+
 [redacted description]
 
 ## TODOs
 
-
 ## Expected Delivery
+
 - A public API to view your execution
 - A reviewable copy of the codebase
 - Any relevant documentation
 
 ## The Rules
+
 - [redacted]
 - You can use any resource or library that you think is *best for the product*, but we do request that the languages be selected from Javascript, Python, or PHP for the sake of this challenge. You must be able to justify and attribute any external resource.
 - We are great resources! Ask as many questions of the [redacted] team as you would throughout any project. We have been working with this client for many years and can provide feedback or validate any assumptions.
 
-## You will be graded on:
+## You will be graded on
+
 - The elegance, clarity, scalability, and organization of your code
 - Your understanding of best practices
 - Development Speed v.s. Quality Deliverable
@@ -23,7 +26,7 @@
 
 ## Requirements
 
-Our team is being tasked with generating an API that supplies geospatial airport data to an iOS application that helps users map and geographically compare airports around the world. 
+Our team is being tasked with generating an API that supplies geospatial airport data to an iOS application that helps users map and geographically compare airports around the world.
 
 Assume that the application is “read heavy”, and does not need to often update the stored airport data (as airports are not often added)
 Assume that the API will need to serve an average of 500 requests/second, but that the usage could fluctuate +/-300 requests/second, depending on the time of day.
@@ -31,7 +34,6 @@ Assume that the API will need to serve an average of 500 requests/second, but th
 Assume that the stack for this project is left to your authority, and that any choice of technologies (including database) is up to your discretion.
 
 A CSV document with airport data has been included with this document.
-
 
 **Problem 1:**
 
@@ -54,14 +56,12 @@ Write and document an endpoint that is able to efficiently return a JSON-formatt
 - Longitude
 - Radius
 
-
 **Problem 3:**
 
 Write and document an endpoint that is able to return a JSON-formatted response with the distance between two supplied airport id’s. The iOS-supplied information should be:
 
 - Airport 1 ID
 - Airport 2 ID
-
 
 **Problem 4:**
 
