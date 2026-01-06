@@ -13,8 +13,8 @@ An API that returns airports within a given radius of a specific coordinate.
     - [Using Postgres](#using-postgres)
     - [Using Redis](#using-redis)
     - [Using Cognito](#using-cognito)
+    - [How to use Swagger UI for testing](#how-to-use-swagger-ui-for-testing)
   - [How to use the API](#how-to-use-the-api)
-  - [How to use Swagger UI for testing](#how-to-use-swagger-ui-for-testing)
   - [API Routes](#api-routes)
     - [Healh Check Endopoint](#healh-check-endopoint)
       - [`GET /health`](#get-health)
@@ -157,6 +157,17 @@ the app should be able to infer whether to use TLS or not based on the endpoint 
 
 If setting up Cognito (you'll need it for login) on your own locally, you'll need to set the `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` environment variables. setup a Cognito user pool and client id in AWS, and set the `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` environment variables.
 
+### How to use Swagger UI for testing
+
+> [!NOTE]
+This is a feature in dev, locally only for now.
+
+This is a quick guide on how to use Swagger to interact with the API endpoints for testing.
+
+in dev mode, navigate to `localhost:3000/docs` to view the Swagger UI. If I get around to it, I may have a live api domain link, but for now, must use your local machine.
+
+---
+
 ## How to use the API
 
 You will need to authenticate with Cognito to use the API.
@@ -205,16 +216,6 @@ Use the `accessToken` from the response in the `Authorization` header for subseq
 ```json
 Authorization: Bearer <accessToken>
 ```
-
----
-
-## How to use Swagger UI for testing
-
-This is a quick guide on how to use Swagger to interact with the API endpoints for testing.
-
-in dev mode, navigate to `localhost:3000/docs` to view the Swagger UI. If I get around to it, I may have a live api domain link, but for now, must use your local machine.
-
-### Other Routes Available in Swagger UI <!-- omit from toc -->
 
 ---
 
