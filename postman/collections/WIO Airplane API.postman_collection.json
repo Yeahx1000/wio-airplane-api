@@ -1,0 +1,271 @@
+{
+	"info": {
+		"_postman_id": "aff4e7b0-0b94-47fb-8ee5-16a60b1bf941",
+		"name": "WIO Airplane API",
+		"description": "API collection for the WIO Airplane API - a Fastify-based backend for airport data, routing, and authentication using AWS Cognito.\n\n## Authentication\nMost endpoints require a Bearer token in the Authorization header. Use the `/auth/login` endpoint to obtain tokens.\n\n## Base URL\nDefault: `http://localhost:3000`\n\nSet the `{{base_url}}` variable to your server address.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "31342718",
+		"_collection_link": "https://kth333-5288.postman.co/workspace/Wonderful-io~48f70315-a07b-4b1c-9477-494f31be5e1b/collection/31342718-aff4e7b0-0b94-47fb-8ee5-16a60b1bf941?action=share&source=collection_link&creator=31342718"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/health",
+						"description": "Health check endpoint. Returns the status of the API, database, and Redis connections."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"usernameOrEmail\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": "{{base_url}}/auth/login",
+						"description": "Login with email/username and password. Returns access token, refresh token, and ID token."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+						},
+						"url": "{{base_url}}/auth/refresh",
+						"description": "Refresh access token using a refresh token."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": "{{base_url}}/auth/me",
+						"description": "Get the currently authenticated user's information. Requires Bearer token."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Airports",
+			"item": [
+				{
+					"name": "Get Airport by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": "{{base_url}}/airports/1",
+						"description": "Get airport details by ID. Replace `1` with the desired airport ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Airports by Radius",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/airports/radius?lat=40.7128&lon=-74.0060&radius=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"airports",
+								"radius"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "40.7128",
+									"description": "Latitude (-90 to 90)"
+								},
+								{
+									"key": "lon",
+									"value": "-74.0060",
+									"description": "Longitude (-180 to 180)"
+								},
+								{
+									"key": "radius",
+									"value": "50",
+									"description": "Radius in kilometers"
+								}
+							]
+						},
+						"description": "Get all airports within a given radius (km) of a coordinate."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Distance Between Airports",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/airports/distance?id1=1&id2=2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"airports",
+								"distance"
+							],
+							"query": [
+								{
+									"key": "id1",
+									"value": "1",
+									"description": "First airport ID"
+								},
+								{
+									"key": "id2",
+									"value": "2",
+									"description": "Second airport ID"
+								}
+							]
+						},
+						"description": "Get the distance in kilometers between two airports."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Closest Airports Between Countries",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/airports/countries?country1=United States&country2=United Kingdom",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"airports",
+								"countries"
+							],
+							"query": [
+								{
+									"key": "country1",
+									"value": "United States",
+									"description": "First country name"
+								},
+								{
+									"key": "country2",
+									"value": "United Kingdom",
+									"description": "Second country name"
+								}
+							]
+						},
+						"description": "Get the closest airports between two countries and the distance between them."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Route Between Airports",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/airports/route?fromId=1&toId=2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"airports",
+								"route"
+							],
+							"query": [
+								{
+									"key": "fromId",
+									"value": "1",
+									"description": "Origin airport ID"
+								},
+								{
+									"key": "toId",
+									"value": "2",
+									"description": "Destination airport ID"
+								}
+							]
+						},
+						"description": "Get the shortest route between two airports with a maximum leg distance of 500 miles. Returns route legs, total distance, and number of stops."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
