@@ -8,8 +8,11 @@ An API that returns airports within a given radius of a specific coordinate.
   - [Table of Contents](#table-of-contents)
   - [Tech Stack](#tech-stack)
   - [Installation](#installation)
-  - [Using Docker](#using-docker)
-  - [Using Redis](#using-redis)
+  - [Running the API locally](#running-the-api-locally)
+    - [Using Docker](#using-docker)
+    - [Using Postgres](#using-postgres)
+    - [Using Redis](#using-redis)
+    - [Using Cognito](#using-cognito)
   - [How to use the API](#how-to-use-the-api)
   - [How to use Swagger UI for testing](#how-to-use-swagger-ui-for-testing)
   - [API Routes](#api-routes)
@@ -35,16 +38,18 @@ These weren't all used given the scope, but at scale they would be theoretically
 - Node.js (Typescript, ESM)
 - Fastify (web framework)
 - AWS
-  - ~~S3 (store CSV)~~
+  - ~~S3 (store CSV or images)~~ (not used here but should be in prod for static files)
   - RDS (Postgresql & PostGIS)
-  - ECS (containerize API, Fargate, helping to scale horizontally)
+  - ECS (containerize API, Fargate, helping to scale horizontally, Load Balancer can be used for scaling, not used here)
   - ElastiCache (Redis)
   - ~~CloudFront (CDN)~~
   - Cloudwatch (metrics, logs, naturally there when using other services on AWS)
   - Cognito (Auth & User management)
+  - Codebuild
 - Docker
 - Zod (data validation)
 - Swagger (API documentation)
+- K6 (load testing)
 
 ## Misc Tools Used <!-- omit from toc -->
 
@@ -101,16 +106,20 @@ STRONGLY RECOMMEND: run `npm run warm-cache` before running the server, to warm 
 
 That's mostly it. The app will be running on port 3000 by default.
 
-## Using Docker
+## Running the API locally
 
-### Building and running your application <!-- omit from toc -->
+This isn't required, but if you want to run the API locally, you can do so with Docker, Postgres, Redis, and Cognito. Otherwise, you can access the API from the proper URL and endpoints using your bearer token provided from login.
+
+### Using Docker
+
+#### Building and running your application <!-- omit from toc -->
 
 When you're ready to build and run your app, start by running:
 `docker compose up --build`.
 
 The app will be available at `http://localhost:3000`
 
-### Deploying app to the cloud <!-- omit from toc -->
+#### Deploying app to the cloud <!-- omit from toc -->
 
 First, build your image, e.g.: `docker build -t myapp .`.
 If your cloud uses a different CPU architecture than your development
@@ -123,11 +132,17 @@ Then, push it to your registry, e.g. `docker push myregistry.com/myapp`.
 Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharing/)
 docs for more detail on building and pushing.
 
-### References <!-- omit from toc -->
+#### References <!-- omit from toc -->
 
 - [Docker's Node.js guide](https://docs.docker.com/language/nodejs/)
 
-## Using Redis
+### Using Postgres
+
+If setting up Postgres on your own locally, you'll need to set the `DB_HOST` and `DB_PORT` environment variables. by default the port is `5432` and the host is `localhost`.
+
+### Using Redis
+
+If setting up Redis on your own locally, you'll need to set the `REDIS_HOST` and `REDIS_PORT` environment variables. by default the port is `6379` and the host is `localhost`.
 
 When running in production, Elasticache is intended to be used as a cache layer, but other services can be used. comment out the .env for `REDIS_HOST=localhost` and uncomment the following:
 
@@ -137,6 +152,10 @@ REDIS_HOST=your-elasticache-or-other-enpoint # use this when running in producti
 ```
 
 the app should be able to infer whether to use TLS or not based on the endpoint (whether using a local redis instance or in production), but you can also set `REDIS_TLS=true` if needed.
+
+### Using Cognito
+
+If setting up Cognito (you'll need it for login) on your own locally, you'll need to set the `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` environment variables. setup a Cognito user pool and client id in AWS, and set the `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` environment variables.
 
 ## How to use the API
 
@@ -196,6 +215,8 @@ This is a quick guide on how to use Swagger to interact with the API endpoints f
 in dev mode, navigate to `localhost:3000/docs` to view the Swagger UI. If I get around to it, I may have a live api domain link, but for now, must use your local machine.
 
 ### Other Routes Available in Swagger UI <!-- omit from toc -->
+
+---
 
 ## API Routes
 
@@ -406,6 +427,9 @@ GET /airports/countries?country1=United States&country2=Canada
 
 Find the shortest route between two airports. Routes are calculated with a maximum leg distance of 500 miles.
 
+> [!NOTE]
+**Note:** If no route exists within the 500-mile leg distance constraint, a 404 error will be returned.
+
 **Query Params:**
 
 - `fromId` (required): Starting airport ID (integer, minimum: 1)
@@ -422,5 +446,3 @@ GET /airports/route?fromId=1&toId=100
 - `legs`: Array of route segments, each with fromId, toId, fromAirport, toAirport, and distance
 - `totalDistance`: Total distance of the route in kilometers
 - `totalStops`: Number of stops (legs - 1)
-
-> **Note:** If no route exists within the 500-mile leg distance constraint, a 404 error will be returned.

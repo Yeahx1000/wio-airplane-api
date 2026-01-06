@@ -15,6 +15,7 @@ Keeping this here to reference as I go through the project. Also available in th
 - Docker
 - Zod (data validation)
 - Swagger (API documentation)
+- K6 (load testing)
 
 ## Misc Tools Used
 

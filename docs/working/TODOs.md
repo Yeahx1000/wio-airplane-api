@@ -27,6 +27,7 @@ Prior - Phase 0: Setup
   - [ ] ~~S3~~ (not needed, migrated CSV in batches to RDS using terminal script already)
   - [X] ElastiCache
   - [X] Cognito
+  - [X] Codebuild
 
 ## Phase 1: Foundation & Database
 
@@ -82,7 +83,7 @@ Why? for security
 - [X] 4.11 - Complete Swagger UI examples
 - [X] 4.12 - Fix airports/countries route crashing when requests sent.
 - [X] 4.13 - Fix airports/routes route hang, algo issue, finishes, but takes way too long.
-- [X] 4.14 - swagger ui not in docker container, fix.
+- [ ] ~~4.14 - swagger ui not in docker container (API works, just no ui), fix.~~ (will leave as is for now)
 
 ## Phase 5: Infra & Observability (optional)
 
@@ -100,11 +101,12 @@ Contemplating this one, time wise, might not make the cut, but will see.
 Why? self explanatory
 
 - [X] 6.1 - Document API endpoints (Swagger + README)
-- [ ] 6.2 - Verify performance (test 500 req/s capacity)
-- [ ] 6.3 - General Testing (integration tests?)
+- [ ] 6.2 - Verify performance (test 500 req/s capacity) - k6 load testing scripts created
+- ~~[ ] 6.3 - General Testing (integration tests?)~~
 
 ## Phase 7: Delivery & Costs
 
-- [ ] 7.1 - Provide estimates on the scalability and monthly costs. Consider alternatives and tradeoffs.
-- [ ] 7.2 - Create a "full" potential Sys design, including E2E breakdown Client Layer, API Layer, Data Layer, Analytics, with cost analysis.
+- [X] 7.1 - Provide estimates on the scalability and monthly costs. Consider alternatives and tradeoffs.
+- ~~[ ] 7.2 - Create a "full" potential Sys design, including E2E breakdown Client Layer, API Layer, Data Layer, Analytics, with cost analysis.~~ (overkill)
 - [ ] 7.3 - Clean up codebase, DRY up, remove unused code, yada yada.
+- [ ] 7.4 - ~~add better docs for each setup step, maybe local dev too. (docker, redis, postgres)~~ (will leave as is for now)

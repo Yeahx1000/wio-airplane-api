@@ -10,6 +10,9 @@
     "start": "node dist/server.js",
     "ingest": "tsx misc/scripts/ingest-airports.ts",
     "warm-cache": "tsx misc/scripts/warm-cache.ts",
+    "load-test": "k6 run misc/scripts/tests/load-test.js",
+    "load-test:500": "k6 run misc/scripts/tests/load-test-500.js",
+    "load-test:1000": "k6 run misc/scripts/tests/load-test-1000.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
