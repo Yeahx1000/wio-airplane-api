@@ -17,64 +17,58 @@ export class AirportService {
         private readonly repository: AirportRepository
     ) { }
 
-    async findById(id: number): Promise<Airport | null> {
-        const cacheKey = cacheKeys.airport(id);
-        const cached = await redisClient.getJSON<Airport>(cacheKey);
+    private async getOrSetCache<T>(
+        cacheKey: string,
+        fetchFn: () => Promise<T | null>,
+        ttl: number,
+        allowNull = false
+    ): Promise<T | null> {
+        const cached = await redisClient.getJSON<T>(cacheKey);
         if (cached) {
             recordCacheHit(cacheKey);
             return cached;
         }
 
         recordCacheMiss(cacheKey);
-        const airport = await this.repository.findById(id);
-        if (airport) {
-            await redisClient.setJSON(cacheKey, airport, CACHE_TTL.AIRPORT);
+        const result = await fetchFn();
+        if (result !== null || allowNull) {
+            await redisClient.setJSON(cacheKey, result, ttl);
         }
-        return airport;
+        return result;
+    }
+
+    async findById(id: number): Promise<Airport | null> {
+        return this.getOrSetCache(
+            cacheKeys.airport(id),
+            () => this.repository.findById(id),
+            CACHE_TTL.AIRPORT
+        );
     }
 
     async findByRadius(lat: number, lon: number, radiusKm: number): Promise<AirportWithDistance[]> {
-        const cacheKey = cacheKeys.airportsInRadius(lat, lon, radiusKm);
-        const cached = await redisClient.getJSON<AirportWithDistance[]>(cacheKey);
-        if (cached) {
-            recordCacheHit(cacheKey);
-            return cached;
-        }
-
-        recordCacheMiss(cacheKey);
-        const airports = await this.repository.findByRadius(lat, lon, radiusKm);
-        await redisClient.setJSON(cacheKey, airports, CACHE_TTL.AIRPORTS_IN_RADIUS);
-        return airports;
+        return this.getOrSetCache(
+            cacheKeys.airportsInRadius(lat, lon, radiusKm),
+            () => this.repository.findByRadius(lat, lon, radiusKm),
+            CACHE_TTL.AIRPORTS_IN_RADIUS,
+            true
+        ) || [];
     }
 
     async findDistance(id1: number, id2: number): Promise<number | null> {
-        const cacheKey = cacheKeys.airportDistance(id1, id2);
-        const cached = await redisClient.getJSON<number>(cacheKey);
-        if (cached !== null) {
-            recordCacheHit(cacheKey);
-            return cached;
-        }
-
-        recordCacheMiss(cacheKey);
-        const distance = await this.repository.findDistance(id1, id2);
-        if (distance !== null) {
-            await redisClient.setJSON(cacheKey, distance, CACHE_TTL.DISTANCE);
-        }
-        return distance;
+        return this.getOrSetCache(
+            cacheKeys.airportDistance(id1, id2),
+            () => this.repository.findDistance(id1, id2),
+            CACHE_TTL.DISTANCE
+        );
     }
 
     async findByCountry(country: string): Promise<Airport[]> {
-        const cacheKey = cacheKeys.airportsByCountry(country);
-        const cached = await redisClient.getJSON<Airport[]>(cacheKey);
-        if (cached) {
-            recordCacheHit(cacheKey);
-            return cached;
-        }
-
-        recordCacheMiss(cacheKey);
-        const airports = await this.repository.findByCountry(country);
-        await redisClient.setJSON(cacheKey, airports, CACHE_TTL.AIRPORTS_BY_COUNTRY);
-        return airports;
+        return this.getOrSetCache(
+            cacheKeys.airportsByCountry(country),
+            () => this.repository.findByCountry(country),
+            CACHE_TTL.AIRPORTS_BY_COUNTRY,
+            true
+        ) || [];
     }
 
     async findAll(): Promise<Airport[]> {
@@ -82,20 +76,10 @@ export class AirportService {
     }
 
     async findCountryComparison(country1: string, country2: string): Promise<CountryComparison | null> {
-        const cacheKey = cacheKeys.countryComparison(country1, country2);
-        const cached = await redisClient.getJSON<CountryComparison>(cacheKey);
-        if (cached) {
-            recordCacheHit(cacheKey);
-            return cached;
-        }
-
-        recordCacheMiss(cacheKey);
-        const comparison = await this.repository.findClosestAirportsBetweenCountries(country1, country2);
-        if (!comparison) {
-            return null;
-        }
-
-        await redisClient.setJSON(cacheKey, comparison, CACHE_TTL.COUNTRY_COMPARISON);
-        return comparison;
+        return this.getOrSetCache(
+            cacheKeys.countryComparison(country1, country2),
+            () => this.repository.findClosestAirportsBetweenCountries(country1, country2),
+            CACHE_TTL.COUNTRY_COMPARISON
+        );
     }
 }

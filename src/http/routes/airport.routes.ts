@@ -12,6 +12,7 @@ import {
     routeResponseSchema,
 } from '../../validation/airport.schemas.js';
 import { zodToFastifySchema } from '../../validation/schema-converter.js';
+import { UNAUTHORIZED_RESPONSE, NOT_FOUND_RESPONSE } from '../utils/response-schemas.js';
 
 export const registerAirportRoutes = (fastify: FastifyInstance) => {
     const repository = new AirportRepository();
@@ -53,20 +54,8 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
                         }
                     ]
                 },
-                401: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
-                404: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
+                401: UNAUTHORIZED_RESPONSE,
+                404: NOT_FOUND_RESPONSE,
             },
         },
         handler: controller.getAirportById.bind(controller),
@@ -116,13 +105,7 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
                         ]
                     ]
                 },
-                401: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
+                401: UNAUTHORIZED_RESPONSE,
             },
         },
         handler: controller.getAirportsByRadius.bind(controller),
@@ -158,20 +141,8 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
                         }
                     ]
                 },
-                401: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
-                404: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
+                401: UNAUTHORIZED_RESPONSE,
+                404: NOT_FOUND_RESPONSE,
             },
         },
         handler: controller.getDistance.bind(controller),
@@ -231,20 +202,8 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
                         }
                     ]
                 },
-                401: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
-                404: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
+                401: UNAUTHORIZED_RESPONSE,
+                404: NOT_FOUND_RESPONSE,
             },
         },
         handler: controller.getCountryComparison.bind(controller),
@@ -317,20 +276,8 @@ export const registerAirportRoutes = (fastify: FastifyInstance) => {
                         }
                     ]
                 },
-                401: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
-                404: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
+                401: UNAUTHORIZED_RESPONSE,
+                404: NOT_FOUND_RESPONSE,
             },
         },
         handler: controller.getRoute.bind(controller),

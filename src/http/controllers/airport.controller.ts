@@ -35,12 +35,7 @@ export class AirportController {
         private readonly routeService: RouteService
     ) { }
 
-    async getAirportById(
-        req: FastifyRequest<{ Params: AirportByIdParams }>,
-        res: FastifyReply
-    ) {
-        const { id } = req.params;
-
+    private async ensureAirportExists(id: number): Promise<void> {
         const airport = await this.airportService.findById(id);
         if (!airport) {
             throw new AppError(
@@ -49,8 +44,15 @@ export class AirportController {
                 ErrorCodes.AIRPORT_NOT_FOUND
             );
         }
+    }
 
-        return airport;
+    async getAirportById(
+        req: FastifyRequest<{ Params: AirportByIdParams }>,
+        res: FastifyReply
+    ) {
+        const { id } = req.params;
+        await this.ensureAirportExists(id);
+        return await this.airportService.findById(id);
     }
 
     async getAirportsByRadius(
@@ -68,23 +70,8 @@ export class AirportController {
     ) {
         const { id1, id2 } = req.query;
 
-        const airport1 = await this.airportService.findById(id1);
-        if (!airport1) {
-            throw new AppError(
-                `Airport with id ${id1} not found`,
-                404,
-                ErrorCodes.AIRPORT_NOT_FOUND
-            );
-        }
-
-        const airport2 = await this.airportService.findById(id2);
-        if (!airport2) {
-            throw new AppError(
-                `Airport with id ${id2} not found`,
-                404,
-                ErrorCodes.AIRPORT_NOT_FOUND
-            );
-        }
+        await this.ensureAirportExists(id1);
+        await this.ensureAirportExists(id2);
 
         const distance = await this.airportService.findDistance(id1, id2);
         if (distance === null) {
@@ -122,23 +109,8 @@ export class AirportController {
     ) {
         const { fromId, toId } = req.query;
 
-        const fromAirport = await this.airportService.findById(fromId);
-        if (!fromAirport) {
-            throw new AppError(
-                `Airport with id ${fromId} not found`,
-                404,
-                ErrorCodes.AIRPORT_NOT_FOUND
-            );
-        }
-
-        const toAirport = await this.airportService.findById(toId);
-        if (!toAirport) {
-            throw new AppError(
-                `Airport with id ${toId} not found`,
-                404,
-                ErrorCodes.AIRPORT_NOT_FOUND
-            );
-        }
+        await this.ensureAirportExists(fromId);
+        await this.ensureAirportExists(toId);
 
         const route = await this.routeService.findRoute(fromId, toId);
         if (!route) {

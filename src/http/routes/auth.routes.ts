@@ -8,6 +8,7 @@ import {
     userResponseSchema,
 } from '../../validation/auth.schemas.js';
 import { zodToFastifySchema } from '../../validation/schema-converter.js';
+import { UNAUTHORIZED_RESPONSE } from '../utils/response-schemas.js';
 
 export const registerAuthRoutes = (fastify: FastifyInstance) => {
     const controller = new AuthController();
@@ -36,13 +37,7 @@ export const registerAuthRoutes = (fastify: FastifyInstance) => {
                         }
                     ]
                 },
-                401: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
+                401: UNAUTHORIZED_RESPONSE,
             },
         },
         handler: controller.login.bind(controller),
@@ -71,13 +66,7 @@ export const registerAuthRoutes = (fastify: FastifyInstance) => {
                         }
                     ]
                 },
-                401: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
+                401: UNAUTHORIZED_RESPONSE,
             },
         },
         handler: controller.refresh.bind(controller),
@@ -101,13 +90,7 @@ export const registerAuthRoutes = (fastify: FastifyInstance) => {
                         }
                     ]
                 },
-                401: {
-                    type: 'object',
-                    properties: {
-                        error: { type: 'string' },
-                        message: { type: 'string' },
-                    },
-                },
+                401: UNAUTHORIZED_RESPONSE,
             },
         },
         handler: controller.me.bind(controller),

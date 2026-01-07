@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { verifyToken, CognitoPayload } from '../../auth/cognito.js';
+import { unauthorizedResponse } from '../utils/error-responses.js';
 
 declare module 'fastify' {
     interface FastifyRequest {
@@ -22,10 +23,7 @@ export const authenticate = async (
     const token = extractToken(req);
 
     if (!token) {
-        res.status(401).send({
-            error: 'Unauthorized',
-            message: 'Missing or invalid authorization header',
-        });
+        res.code(401).send(unauthorizedResponse(res, 'Missing or invalid authorization header'));
         return;
     }
 
@@ -34,10 +32,7 @@ export const authenticate = async (
         req.user = payload;
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Invalid token';
-        res.status(401).send({
-            error: 'Unauthorized',
-            message,
-        });
+        res.code(401).send(unauthorizedResponse(res, message));
         return;
     }
 };

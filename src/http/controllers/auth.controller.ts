@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { login, refreshAccessToken } from '../../auth/cognito.js';
 import { loginSchema, refreshTokenSchema } from '../../validation/auth.schemas.js';
+import { unauthorizedResponse } from '../utils/error-responses.js';
 
 export class AuthController {
     async login(req: FastifyRequest, res: FastifyReply) {
@@ -15,11 +16,7 @@ export class AuthController {
             };
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Authentication failed';
-            res.code(401);
-            return {
-                error: 'Unauthorized',
-                message,
-            };
+            return unauthorizedResponse(res, message);
         }
     }
 
@@ -34,21 +31,13 @@ export class AuthController {
             };
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Token refresh failed';
-            res.code(401);
-            return {
-                error: 'Unauthorized',
-                message,
-            };
+            return unauthorizedResponse(res, message);
         }
     }
 
     async me(req: FastifyRequest, res: FastifyReply) {
         if (!req.user) {
-            res.code(401);
-            return {
-                error: 'Unauthorized',
-                message: 'Not authenticated',
-            };
+            return unauthorizedResponse(res, 'Not authenticated');
         }
 
         return {

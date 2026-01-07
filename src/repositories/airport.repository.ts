@@ -1,22 +1,23 @@
 import { pool } from '../config/database.js';
 import { Airport, AirportWithDistance, CountryComparison } from '../models/airport.model.js';
 
-// this "repository" is responsible for fetching airports from the database and returning them in the correct format, basically some pre-formed queries for the airport service. Seperated out for easy reuse and organization.
+const AIRPORT_FIELDS = `
+    id,
+    airport_name as "airportName",
+    city,
+    country,
+    iata_faa as "iataFaa",
+    icao,
+    latitude,
+    longitude,
+    altitude,
+    timezone
+`;
 
 export class AirportRepository {
     async findById(id: number): Promise<Airport | null> {
         const result = await pool.query(
-            `SELECT 
-                id,
-                airport_name as "airportName",
-                city,
-                country,
-                iata_faa as "iataFaa",
-                icao,
-                latitude,
-                longitude,
-                altitude,
-                timezone
+            `SELECT ${AIRPORT_FIELDS}
             FROM airports
             WHERE id = $1`,
             [id]
@@ -31,17 +32,7 @@ export class AirportRepository {
         const limitClause = limit ? `LIMIT ${limit}` : '';
 
         const result = await pool.query(
-            `SELECT 
-                id,
-                airport_name as "airportName",
-                city,
-                country,
-                iata_faa as "iataFaa",
-                icao,
-                latitude,
-                longitude,
-                altitude,
-                timezone,
+            `SELECT ${AIRPORT_FIELDS},
                 ST_Distance(location::geography, ${point}) / 1000.0 as distance
             FROM airports
             WHERE ST_DWithin(location::geography, ${point}, $3)
@@ -101,17 +92,7 @@ export class AirportRepository {
 
     async findByCountry(country: string): Promise<Airport[]> {
         const result = await pool.query(
-            `SELECT 
-                id,
-                airport_name as "airportName",
-                city,
-                country,
-                iata_faa as "iataFaa",
-                icao,
-                latitude,
-                longitude,
-                altitude,
-                timezone
+            `SELECT ${AIRPORT_FIELDS}
             FROM airports
             WHERE LOWER(country) = LOWER($1)
             ORDER BY airport_name ASC`,
@@ -123,17 +104,7 @@ export class AirportRepository {
 
     async findAll(): Promise<Airport[]> {
         const result = await pool.query(
-            `SELECT 
-                id,
-                airport_name as "airportName",
-                city,
-                country,
-                iata_faa as "iataFaa",
-                icao,
-                latitude,
-                longitude,
-                altitude,
-                timezone
+            `SELECT ${AIRPORT_FIELDS}
             FROM airports
             ORDER BY id ASC`
         );
