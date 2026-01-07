@@ -17,8 +17,8 @@ export const configureApp = async (app: FastifyInstance) => {
             openapi: {
                 openapi: '3.0.0',
                 info: {
-                    title: 'Airport API',
-                    description: 'API for querying airport data and routes',
+                    title: 'WIO Airplane API',
+                    description: 'API for querying airport data and airplane routes',
                     version: '1.0.0',
                 },
                 servers: [

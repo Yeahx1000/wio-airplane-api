@@ -1,35 +1,33 @@
-# Airplane API
+# WIO Airplane API 🏙️ 🛫 -> 🛬 🌃 <!-- omit from toc -->
 
 An API that returns airports within a given radius of a specific coordinate.
 
-## Table of Contents
+## Table of Contents <!-- omit from toc -->
 
-- [Airplane API](#airplane-api)
-  - [Table of Contents](#table-of-contents)
-  - [Tech Stack](#tech-stack)
-  - [Installation](#installation)
-  - [Running the API locally](#running-the-api-locally)
-    - [Using Docker](#using-docker)
-    - [Using Postgres](#using-postgres)
-    - [Using Redis](#using-redis)
-    - [Using Cognito](#using-cognito)
-    - [Using Swagger UI (for testing)](#using-swagger-ui-for-testing)
-  - [How to use the API](#how-to-use-the-api)
-  - [API Routes](#api-routes)
-    - [Healh Check Endopoint](#healh-check-endopoint)
-      - [`GET /health`](#get-health)
-    - [Metrics Endpoint](#metrics-endpoint)
-      - [`GET /metrics`](#get-metrics)
-    - [Auth Endpoints](#auth-endpoints)
-      - [`POST /auth/login`](#post-authlogin)
-      - [`POST /auth/refresh`](#post-authrefresh)
-      - [`GET /auth/me`](#get-authme)
-    - [Airport Enpoints](#airport-enpoints)
-      - [`GET /airports/:id`](#get-airportsid)
-      - [`GET /airports/radius`](#get-airportsradius)
-      - [`GET /airports/distance`](#get-airportsdistance)
-      - [`GET /airports/countries`](#get-airportscountries)
-      - [`GET /airports/route`](#get-airportsroute)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Running the API locally](#running-the-api-locally)
+  - [Using Docker](#using-docker)
+  - [Using Postgres](#using-postgres)
+  - [Using Redis](#using-redis)
+  - [Using Cognito](#using-cognito)
+  - [Using Swagger UI (for testing)](#using-swagger-ui-for-testing)
+- [How to use the API](#how-to-use-the-api)
+- [API Routes](#api-routes)
+  - [Healh Check Endopoint](#healh-check-endopoint)
+    - [`GET /health`](#get-health)
+  - [Metrics Endpoint](#metrics-endpoint)
+    - [`GET /metrics`](#get-metrics)
+  - [Auth Endpoints](#auth-endpoints)
+    - [`POST /auth/login`](#post-authlogin)
+    - [`POST /auth/refresh`](#post-authrefresh)
+    - [`GET /auth/me`](#get-authme)
+  - [Airport Enpoints](#airport-enpoints)
+    - [`GET /airports/:id`](#get-airportsid)
+    - [`GET /airports/radius`](#get-airportsradius)
+    - [`GET /airports/distance`](#get-airportsdistance)
+    - [`GET /airports/countries`](#get-airportscountries)
+    - [`GET /airports/route`](#get-airportsroute)
 
 ## Tech Stack
 
@@ -49,7 +47,6 @@ These weren't all used given the scope, but at scale they would be theoretically
 - Docker
 - Zod (data validation)
 - Swagger (API documentation)
-- K6 (load testing)
 
 ## Misc Tools Used <!-- omit from toc -->
 
@@ -57,7 +54,7 @@ These weren't all used given the scope, but at scale they would be theoretically
 
 - pgAdmin
 - Postman
-- ?? (still deciding on in editor tools)
+- K6 (load testing)
 
 ### Research tools (mainly for architectural decisions) <!-- omit from toc -->
 
@@ -162,6 +159,8 @@ the app should be able to infer whether to use TLS or not based on the endpoint 
 If setting up Cognito (you'll need it for login) on your own locally, you'll need to set the `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` environment variables. setup a Cognito user pool and client id in AWS, and set the `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` environment variables.
 
 ### Using Swagger UI (for testing)
+
+![Swagger UI screenshot](public/images/swagger-ui-ss.png)
 
 > [!NOTE]
 This is a feature in dev, locally only for now.
