@@ -46,12 +46,13 @@ export class AirportService {
     }
 
     async findByRadius(lat: number, lon: number, radiusKm: number): Promise<AirportWithDistance[]> {
-        return this.getOrSetCache(
+        const result = await this.getOrSetCache(
             cacheKeys.airportsInRadius(lat, lon, radiusKm),
             () => this.repository.findByRadius(lat, lon, radiusKm),
             CACHE_TTL.AIRPORTS_IN_RADIUS,
             true
-        ) || [];
+        );
+        return result || [];
     }
 
     async findDistance(id1: number, id2: number): Promise<number | null> {
@@ -63,12 +64,13 @@ export class AirportService {
     }
 
     async findByCountry(country: string): Promise<Airport[]> {
-        return this.getOrSetCache(
+        const result = await this.getOrSetCache(
             cacheKeys.airportsByCountry(country),
             () => this.repository.findByCountry(country),
             CACHE_TTL.AIRPORTS_BY_COUNTRY,
             true
-        ) || [];
+        );
+        return result || [];
     }
 
     async findAll(): Promise<Airport[]> {
