@@ -9,6 +9,10 @@ const poolConfig = {
     ssl: config.database.ssl ? { rejectUnauthorized: false } : false,
     query_timeout: 30000,
     statement_timeout: 30000,
+    max: 50,
+    min: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
 };
 
 console.log('Database connection config:', {

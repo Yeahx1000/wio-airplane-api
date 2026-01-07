@@ -72,6 +72,33 @@ export class AirportRepository {
         return parseFloat(result.rows[0].distance);
     }
 
+    async findDistancesBatch(pairs: Array<[number, number]>): Promise<Map<string, number>> {
+        if (pairs.length === 0) {
+            return new Map();
+        }
+
+        const values = pairs.map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`).join(', ');
+        const params = pairs.flat();
+
+        const result = await pool.query(
+            `SELECT 
+                a1.id as id1,
+                a2.id as id2,
+                ST_Distance(a1.location::geography, a2.location::geography) / 1000.0 as distance
+            FROM airports a1, airports a2
+            WHERE (a1.id, a2.id) IN (VALUES ${values})`,
+            params
+        );
+
+        const distanceMap = new Map<string, number>();
+        for (const row of result.rows) {
+            const key = `${row.id1}:${row.id2}`;
+            distanceMap.set(key, parseFloat(row.distance));
+        }
+
+        return distanceMap;
+    }
+
     async findByCountry(country: string): Promise<Airport[]> {
         const result = await pool.query(
             `SELECT 

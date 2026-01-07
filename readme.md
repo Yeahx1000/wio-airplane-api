@@ -13,7 +13,7 @@ An API that returns airports within a given radius of a specific coordinate.
     - [Using Postgres](#using-postgres)
     - [Using Redis](#using-redis)
     - [Using Cognito](#using-cognito)
-    - [How to use Swagger UI for testing](#how-to-use-swagger-ui-for-testing)
+    - [Using Swagger UI (for testing)](#using-swagger-ui-for-testing)
   - [How to use the API](#how-to-use-the-api)
   - [API Routes](#api-routes)
     - [Healh Check Endopoint](#healh-check-endopoint)
@@ -65,6 +65,8 @@ These weren't all used given the scope, but at scale they would be theoretically
 - chatGPT
 - NotebookLLM
 
+---
+
 ## Installation
 
 To get started, you'll need to install the dependencies:
@@ -105,6 +107,8 @@ npm run ingest
 STRONGLY RECOMMEND: run `npm run warm-cache` before running the server, to warm the cache with the first batch of airports. if not done, requests, particularly to `/airports/route` will be much slower at first (about 1-3mins vs 1-10s).
 
 That's mostly it. The app will be running on port 3000 by default.
+
+---
 
 ## Running the API locally
 
@@ -157,7 +161,7 @@ the app should be able to infer whether to use TLS or not based on the endpoint 
 
 If setting up Cognito (you'll need it for login) on your own locally, you'll need to set the `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` environment variables. setup a Cognito user pool and client id in AWS, and set the `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` environment variables.
 
-### How to use Swagger UI for testing
+### Using Swagger UI (for testing)
 
 > [!NOTE]
 This is a feature in dev, locally only for now.
@@ -242,14 +246,22 @@ curl http://localhost:3000/health
 }
 ```
 
+---
+
 ### Metrics Endpoint
+
+---
 
 > [!NOTE]
 This endpoint is commented out by default, uncomment to enable metrics collection and expose endpoint.
 
 #### `GET /metrics`
 
+---
+
 ### Auth Endpoints
+
+---
 
 > [!WARNING]
 You must authhenticate to use other routes in the API. This step is required
@@ -342,7 +354,11 @@ Take the access token returned from the login request and add it to the `Authori
 From here on, you can use the API endpoints as you would normally. There are 4 endpoints mainly for
 testing:
 
+---
+
 ### Airport Enpoints
+
+---
 
 #### `GET /airports/:id`
 
@@ -359,8 +375,6 @@ GET /airports/123
 ```
 
 **Response:** Returns airport object with id, airportName, city, country, iataFaa, icao, latitude, longitude, altitude, and timezone.
-
----
 
 #### `GET /airports/radius`
 
@@ -380,8 +394,6 @@ GET /airports/radius?lat=40.7128&lon=-74.0060&radius=100
 
 **Response:** Returns an array of airports within the radius, each including a `distance` field showing the distance from the center point in kilometers.
 
----
-
 #### `GET /airports/distance`
 
 Calculate the distance between two airports in kilometers.
@@ -398,8 +410,6 @@ GET /airports/distance?id1=1&id2=2
 ```
 
 **Response:** Returns an object with a `distance` field containing the distance in kilometers.
-
----
 
 #### `GET /airports/countries`
 
@@ -421,8 +431,6 @@ GET /airports/countries?country1=United States&country2=Canada
 - `airport1`: The airport from country1
 - `airport2`: The airport from country2
 - `distance`: The distance between them in kilometers
-
----
 
 #### `GET /airports/route`
 

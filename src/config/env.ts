@@ -35,6 +35,10 @@ const envSchema = z.object({
     COGNITO_USER_POOL_ID: z.string().min(1),
     COGNITO_CLIENT_ID: z.string().min(1),
     COGNITO_CLIENT_SECRET: z.string().optional(),
+
+    TEST_URL: z.string().default('http://localhost:3000'),
+    TEST_USERNAME: z.string(),
+    TEST_PASSWORD: z.string(),
 });
 
 type Env = z.infer<typeof envSchema>;
@@ -89,5 +93,14 @@ export const config = {
         clientId: env.COGNITO_CLIENT_ID,
         clientSecret: env.COGNITO_CLIENT_SECRET,
     },
+    test: {
+        url: env.TEST_URL,
+        username: env.TEST_USERNAME,
+        password: env.TEST_PASSWORD,
+    },
 };
+
+export const TEST_URL = env.TEST_URL;
+export const TEST_USERNAME = env.TEST_USERNAME;
+export const TEST_PASSWORD = env.TEST_PASSWORD;
 

@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import fastifyHelmet from '@fastify/helmet';
+import fastifyCompress from '@fastify/compress';
 import { rateLimit } from '../http/middleware/rate-limit.js';
 import { logger } from '../http/middleware/logger.js';
 import { errorHandler } from '../http/middleware/error-handler.js';
@@ -51,6 +52,13 @@ export const configureApp = async (app: FastifyInstance) => {
             },
             staticCSP: true,
             transformStaticCSP: (header) => header,
+        });
+
+        console.log('Registering compression...');
+        await app.register(fastifyCompress, {
+            global: true,
+            encodings: ['gzip', 'deflate'],
+            threshold: 1024,
         });
 
         console.log('Registering helmet...');

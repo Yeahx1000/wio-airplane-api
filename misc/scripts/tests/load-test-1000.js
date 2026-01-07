@@ -1,8 +1,10 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { check } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
 
-// generated script for 1000 req/s load test, using k6
+// generated script for 1000 req/s load test, using k6,
+// this is beyond the limit requested, to see how the server performs under load.
+// NOTE: Set RATE_LIMIT_PER_IP=10000 and RATE_LIMIT_GLOBAL_MAX=1200 in .env
 
 const errorRate = new Rate('errors');
 const requestDuration = new Trend('request_duration');
@@ -12,20 +14,21 @@ const TARGET_RPS = 1000;
 const DURATION = '60s';
 
 export const options = {
-    stages: [
-        { duration: '10s', target: 200 },
-        { duration: '10s', target: 500 },
-        { duration: '10s', target: 750 },
-        { duration: '10s', target: 1000 },
-        { duration: DURATION, target: 1000 },
-        { duration: '10s', target: 500 },
-        { duration: '10s', target: 0 },
-    ],
+    scenarios: {
+        constant_arrival_rate: {
+            executor: 'constant-arrival-rate',
+            rate: TARGET_RPS,
+            timeUnit: '1s',
+            duration: DURATION,
+            preAllocatedVUs: 100,
+            maxVUs: 2000,
+        },
+    },
     thresholds: {
         http_req_duration: ['p(95)<500', 'p(99)<1000'],
         http_req_failed: ['rate<0.05'],
         errors: ['rate<0.05'],
-        http_reqs: ['rate>=900'],
+        http_reqs: ['rate>=900', 'rate<=1100'],
     },
 };
 
@@ -64,10 +67,11 @@ export function setup() {
 
 const endpoints = [
     { path: '/health', weight: 10, requiresAuth: false },
-    { path: '/airports/1', weight: 30, requiresAuth: true },
-    { path: '/airports/radius?lat=40.7128&lon=-74.0060&radius=100', weight: 30, requiresAuth: true },
-    { path: '/airports/distance?id1=1&id2=2', weight: 20, requiresAuth: true },
-    { path: '/airports/countries?country1=United States&country2=Canada', weight: 10, requiresAuth: true },
+    { path: '/airports/1', weight: 25, requiresAuth: true },
+    { path: '/airports/radius?lat=40.7128&lon=-74.0060&radius=100', weight: 25, requiresAuth: true },
+    { path: '/airports/distance?id1=1&id2=2', weight: 15, requiresAuth: true },
+    { path: '/airports/countries', weight: 10, requiresAuth: true, params: { country1: 'United States', country2: 'Canada' } },
+    { path: '/airports/route?fromId=1&toId=2', weight: 15, requiresAuth: true },
 ];
 
 const weightedEndpoints = [];
@@ -97,12 +101,20 @@ export default function (data) {
         headers['Authorization'] = `Bearer ${data.token}`;
     }
 
-    const url = `${BASE_URL}${endpoint.path}`;
+    let url = `${BASE_URL}${endpoint.path}`;
+    if (endpoint.params) {
+        const params = Object.entries(endpoint.params)
+            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+            .join('&');
+        url = `${BASE_URL}${endpoint.path}?${params}`;
+    }
+
     const res = http.get(url, { headers, tags: { endpoint: endpoint.path.split('?')[0] } });
 
     const success = check(res, {
         'status is 200': (r) => r.status === 200,
         'status is not 429': (r) => r.status !== 429,
+        'status is not 401': (r) => r.status !== 401,
         'response time < 2000ms': (r) => r.timings.duration < 2000,
         'has response body': (r) => r.body && r.body.length > 0,
     });
@@ -112,20 +124,21 @@ export default function (data) {
     }
 
     requestDuration.add(res.timings.duration);
-
-    sleep(1 / TARGET_RPS);
 }
 
 export function handleSummary(data) {
-    const actualRPS = data.metrics.http_reqs.values.count / 120;
+    const actualRPS = data.metrics.http_reqs.values.rate;
     const targetMet = actualRPS >= 900;
+
+    const p95 = data.metrics.http_req_duration.values['p(95)'] || 0;
+    const p99 = data.metrics.http_req_duration.values['p(99)'] || 0;
 
     console.log('\n=== Load Test Summary (1000 RPS) ===');
     console.log(`Target RPS: ${TARGET_RPS}`);
     console.log(`Actual RPS: ${actualRPS.toFixed(2)}`);
     console.log(`Target Met: ${targetMet ? 'YES' : 'NO'}`);
-    console.log(`P95 Latency: ${data.metrics.http_req_duration.values['p(95)']}ms`);
-    console.log(`P99 Latency: ${data.metrics.http_req_duration.values['p(99)']}ms`);
+    console.log(`P95 Latency: ${p95.toFixed(2)}ms`);
+    console.log(`P99 Latency: ${p99.toFixed(2)}ms`);
     console.log(`Error Rate: ${(data.metrics.http_req_failed.values.rate * 100).toFixed(2)}%`);
     console.log('====================================\n');
 }

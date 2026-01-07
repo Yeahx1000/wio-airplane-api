@@ -50,19 +50,15 @@ export class RouteService {
             return null;
         }
 
-        const distances = await this.getDistancesForPath(path);
-        const distanceMap = new Map<string, number>();
-        for (let i = 0; i < path.length - 1; i++) {
-            const key = `${path[i]}:${path[i + 1]}`;
-            distanceMap.set(key, distances[i]);
-        }
+        const [distanceMap, airports] = await Promise.all([
+            this.getDistancesForPath(path),
+            this.getAirportsForPath(path)
+        ]);
 
         const routeLegs = buildRoute(
             path,
             (from: number, to: number) => distanceMap.get(`${from}:${to}`) || 0
         );
-
-        const airports = await this.getAirportsForPath(path);
         const airportMap = new Map(airports.map(a => [a.id, a]));
 
         const legs: RouteLeg[] = routeLegs.map(leg => ({
@@ -129,17 +125,18 @@ export class RouteService {
         return neighbors;
     }
 
-    private async getDistancesForPath(path: number[]): Promise<number[]> {
+    private async getDistancesForPath(path: number[]): Promise<Map<string, number>> {
         if (path.length < 2) {
-            return [];
+            return new Map();
         }
 
-        const promises = [];
+        const pairs: Array<[number, number]> = [];
         for (let i = 0; i < path.length - 1; i++) {
-            promises.push(this.repository.findDistance(path[i], path[i + 1]));
+            pairs.push([path[i], path[i + 1]]);
         }
-        const results = await Promise.all(promises);
-        return results.map(d => d || 0);
+
+        const distanceMap = await this.repository.findDistancesBatch(pairs);
+        return distanceMap;
     }
 
     private async getAirportsForPath(path: number[]): Promise<Airport[]> {

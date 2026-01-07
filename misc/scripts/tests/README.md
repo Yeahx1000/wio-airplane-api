@@ -53,9 +53,14 @@ TEST_USERNAME=user@example.com TEST_PASSWORD=password k6 run load-test-500.js
 ## Before Testing
 
 1. Ensure server is running
-2. Adjust rate limits if needed: `RATE_LIMIT_GLOBAL_MAX=1200`
+2. **IMPORTANT**: Adjust rate limits in your `.env` file for load testing:
+   - `RATE_LIMIT_GLOBAL_MAX=1200` (for 1000 RPS tests, default is 800)
+   - `RATE_LIMIT_PER_IP=10000` (default is 100 per 60s - too low for load tests from single IP)
+   - The per-IP limit is the bottleneck when testing from localhost (all requests from same IP)
 3. Warm up cache: `npm run warm-cache`
 4. Monitor server metrics at `/metrics` endpoint
+
+> **Note**: The per-IP rate limit (default: 100 requests per 60 seconds) will cause 429 errors when testing at 500+ RPS from a single IP. Increase `RATE_LIMIT_PER_IP` significantly for load testing.
 
 ## Expected Results
 

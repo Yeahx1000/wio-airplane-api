@@ -82,51 +82,91 @@ export const rateLimit = async (
         return;
     }
 
-    const globalKey = cacheKeys.rateLimit.global(config.rateLimit.globalWindowMs);
-    const globalResult = await checkRateLimit(
-        globalKey,
-        config.rateLimit.globalMax,
-        config.rateLimit.globalWindowMs
-    );
+    try {
+        const client = redisClient.getClient();
+        if (client.status !== 'ready' && client.status !== 'connect') {
+            await redisClient.connect();
+        }
 
-    if (!globalResult.allowed) {
-        const retryAfter = Math.ceil((globalResult.reset - Date.now()) / 1000);
-        res.status(429)
-            .header('Retry-After', retryAfter.toString())
-            .header('X-RateLimit-Limit', globalResult.limit.toString())
-            .header('X-RateLimit-Remaining', globalResult.remaining.toString())
-            .header('X-RateLimit-Reset', new Date(globalResult.reset).toISOString())
-            .send({
-                error: 'Rate limit exceeded',
-                message: `Global rate limit exceeded. Limit: ${globalResult.limit} requests per second`,
-                retryAfter,
-            });
-        return;
-    }
+        const globalKey = cacheKeys.rateLimit.global(config.rateLimit.globalWindowMs);
+        const ip = getClientIp(req);
+        const ipKey = cacheKeys.rateLimit.ip(ip, config.rateLimit.windowMs);
 
-    const ip = getClientIp(req);
-    const ipKey = cacheKeys.rateLimit.ip(ip, config.rateLimit.windowMs);
-    const ipResult = await checkRateLimit(
-        ipKey,
-        config.rateLimit.perIp,
-        config.rateLimit.windowMs
-    );
+        const globalWindow = getCurrentWindow(config.rateLimit.globalWindowMs);
+        const ipWindow = getCurrentWindow(config.rateLimit.windowMs);
+        const globalRedisKey = `${globalKey}:${globalWindow}`;
+        const ipRedisKey = `${ipKey}:${ipWindow}`;
 
-    res.header('X-RateLimit-Limit', ipResult.limit.toString());
-    res.header('X-RateLimit-Remaining', ipResult.remaining.toString());
-    res.header('X-RateLimit-Reset', new Date(ipResult.reset).toISOString());
-    res.header('X-RateLimit-Global-Limit', globalResult.limit.toString());
-    res.header('X-RateLimit-Global-Remaining', globalResult.remaining.toString());
+        const pipeline = client.pipeline();
+        pipeline.incr(globalRedisKey);
+        pipeline.incr(ipRedisKey);
+        pipeline.ttl(globalRedisKey);
+        pipeline.ttl(ipRedisKey);
 
-    if (!ipResult.allowed) {
-        const retryAfter = Math.ceil((ipResult.reset - Date.now()) / 1000);
-        res.status(429)
-            .header('Retry-After', retryAfter.toString())
-            .send({
-                error: 'Rate limit exceeded',
-                message: `Too many requests from this IP. Limit: ${ipResult.limit} per ${config.rateLimit.windowMs / 1000} seconds`,
-                retryAfter,
-            });
-        return;
+        const results = await pipeline.exec();
+        if (!results || results.length < 4) {
+            console.error('Rate limit pipeline failed, allowing request');
+            return;
+        }
+
+        const globalError = results[0][0];
+        const ipError = results[1][0];
+        if (globalError || ipError) {
+            console.error('Rate limit pipeline error:', globalError || ipError);
+            return;
+        }
+
+        const globalCurrent = results[0][1] as number;
+        const ipCurrent = results[1][1] as number;
+
+        if (globalCurrent === 1) {
+            await client.pexpire(globalRedisKey, config.rateLimit.globalWindowMs);
+        }
+        if (ipCurrent === 1) {
+            await client.pexpire(ipRedisKey, config.rateLimit.windowMs);
+        }
+
+        const globalRemaining = Math.max(0, config.rateLimit.globalMax - globalCurrent);
+        const globalAllowed = globalCurrent <= config.rateLimit.globalMax;
+        const globalReset = (globalWindow + 1) * config.rateLimit.globalWindowMs;
+
+        if (!globalAllowed) {
+            const retryAfter = Math.ceil((globalReset - Date.now()) / 1000);
+            res.status(429)
+                .header('Retry-After', retryAfter.toString())
+                .header('X-RateLimit-Limit', config.rateLimit.globalMax.toString())
+                .header('X-RateLimit-Remaining', globalRemaining.toString())
+                .header('X-RateLimit-Reset', new Date(globalReset).toISOString())
+                .send({
+                    error: 'Rate limit exceeded',
+                    message: `Global rate limit exceeded. Limit: ${config.rateLimit.globalMax} requests per second`,
+                    retryAfter,
+                });
+            return;
+        }
+
+        const ipRemaining = Math.max(0, config.rateLimit.perIp - ipCurrent);
+        const ipAllowed = ipCurrent <= config.rateLimit.perIp;
+        const ipReset = (ipWindow + 1) * config.rateLimit.windowMs;
+
+        res.header('X-RateLimit-Limit', config.rateLimit.perIp.toString());
+        res.header('X-RateLimit-Remaining', ipRemaining.toString());
+        res.header('X-RateLimit-Reset', new Date(ipReset).toISOString());
+        res.header('X-RateLimit-Global-Limit', config.rateLimit.globalMax.toString());
+        res.header('X-RateLimit-Global-Remaining', globalRemaining.toString());
+
+        if (!ipAllowed) {
+            const retryAfter = Math.ceil((ipReset - Date.now()) / 1000);
+            res.status(429)
+                .header('Retry-After', retryAfter.toString())
+                .send({
+                    error: 'Rate limit exceeded',
+                    message: `Too many requests from this IP. Limit: ${config.rateLimit.perIp} per ${config.rateLimit.windowMs / 1000} seconds`,
+                    retryAfter,
+                });
+            return;
+        }
+    } catch (error) {
+        console.error('Rate limit Redis error:', error);
     }
 };
