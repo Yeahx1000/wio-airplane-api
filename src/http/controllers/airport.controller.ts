@@ -38,7 +38,7 @@ export class AirportController {
     async getAirportById(
         req: FastifyRequest<{ Params: AirportByIdParams }>,
         res: FastifyReply
-    ): Promise<void> {
+    ) {
         const { id } = req.params;
 
         const airport = await this.airportService.findById(id);
@@ -50,23 +50,22 @@ export class AirportController {
             );
         }
 
-        res.send(airport);
+        return airport;
     }
 
     async getAirportsByRadius(
         req: FastifyRequest<{ Querystring: RadiusQuery }>,
         res: FastifyReply
-    ): Promise<void> {
+    ) {
         const { lat, lon, radius } = req.query;
 
-        const airports = await this.airportService.findByRadius(lat, lon, radius);
-        res.send(airports);
+        return await this.airportService.findByRadius(lat, lon, radius);
     }
 
     async getDistance(
         req: FastifyRequest<{ Querystring: DistanceQuery }>,
         res: FastifyReply
-    ): Promise<void> {
+    ) {
         const { id1, id2 } = req.query;
 
         const airport1 = await this.airportService.findById(id1);
@@ -96,13 +95,13 @@ export class AirportController {
             );
         }
 
-        res.send({ distance });
+        return { distance };
     }
 
     async getCountryComparison(
         req: FastifyRequest<{ Querystring: CountryComparisonQuery }>,
         res: FastifyReply
-    ): Promise<void> {
+    ) {
         const { country1, country2 } = req.query;
 
         const comparison = await this.airportService.findCountryComparison(country1, country2);
@@ -114,13 +113,13 @@ export class AirportController {
             );
         }
 
-        res.send(comparison);
+        return comparison;
     }
 
     async getRoute(
         req: FastifyRequest<{ Querystring: RouteQuery }>,
         res: FastifyReply
-    ): Promise<void> {
+    ) {
         const { fromId, toId } = req.query;
 
         const fromAirport = await this.airportService.findById(fromId);
@@ -150,7 +149,7 @@ export class AirportController {
             );
         }
 
-        res.send(route);
+        return route;
     }
 }
 

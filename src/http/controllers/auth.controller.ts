@@ -8,17 +8,18 @@ export class AuthController {
 
         try {
             const tokens = await login(body.usernameOrEmail, body.password);
-            res.send({
+            return {
                 accessToken: tokens.accessToken,
                 refreshToken: tokens.refreshToken,
                 idToken: tokens.idToken,
-            });
+            };
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Authentication failed';
-            res.status(401).send({
+            res.code(401);
+            return {
                 error: 'Unauthorized',
                 message,
-            });
+            };
         }
     }
 
@@ -27,33 +28,34 @@ export class AuthController {
 
         try {
             const tokens = await refreshAccessToken(body.refreshToken);
-            res.send({
+            return {
                 accessToken: tokens.accessToken,
                 idToken: tokens.idToken,
-            });
+            };
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Token refresh failed';
-            res.status(401).send({
+            res.code(401);
+            return {
                 error: 'Unauthorized',
                 message,
-            });
+            };
         }
     }
 
     async me(req: FastifyRequest, res: FastifyReply) {
         if (!req.user) {
-            res.status(401).send({
+            res.code(401);
+            return {
                 error: 'Unauthorized',
                 message: 'Not authenticated',
-            });
-            return;
+            };
         }
 
-        res.send({
+        return {
             userId: req.user.sub,
             email: req.user.email || undefined,
             username: req.user['cognito:username'] || undefined,
-        });
+        };
     }
 }
 
