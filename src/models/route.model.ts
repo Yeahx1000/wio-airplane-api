@@ -1,4 +1,4 @@
-export interface RouteLeg {
+export type RouteLeg = {
   fromId: number;
   toId: number;
   fromAirport: {
@@ -16,7 +16,7 @@ export interface RouteLeg {
   distance: number;
 }
 
-export interface RouteResponse {
+export type RouteResponse = {
   legs: RouteLeg[];
   totalDistance: number;
   totalStops: number;

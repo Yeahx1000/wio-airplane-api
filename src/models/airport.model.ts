@@ -1,4 +1,4 @@
-export interface Airport {
+export type Airport = {
   id: number;
   airportName: string;
   city: string;
@@ -11,11 +11,11 @@ export interface Airport {
   timezone: string;
 }
 
-export interface AirportWithDistance extends Airport {
+export type AirportWithDistance = Airport & {
   distance?: number;
 }
 
-export interface CountryComparison {
+export type CountryComparison = {
   airport1: Airport;
   airport2: Airport;
   distance: number;

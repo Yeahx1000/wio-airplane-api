@@ -1,4 +1,4 @@
-export interface RouteLeg {
+export type RouteLeg = {
   fromId: number;
   toId: number;
   distance: number;

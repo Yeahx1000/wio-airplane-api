@@ -6,7 +6,7 @@ import { initializeDatabase, pool, closeDatabase } from '../../src/config/databa
 // this script is used to insert the airports data into the database. 
 // on setup, use 'npm run ingest' to run it.
 
-interface AirportRow {
+type AirportRow = {
     ID: string;
     'Airport Name': string;
     City: string;

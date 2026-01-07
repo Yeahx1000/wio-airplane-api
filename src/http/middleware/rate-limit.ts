@@ -3,7 +3,7 @@ import { redisClient } from '../../cache/index.js';
 import { cacheKeys } from '../../cache/keys.js';
 import { config } from '../../config/env.js';
 
-interface RateLimitResult {
+type RateLimitResult = {
     allowed: boolean;
     remaining: number;
     reset: number;

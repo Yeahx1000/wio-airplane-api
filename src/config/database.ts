@@ -15,15 +15,6 @@ const poolConfig = {
     connectionTimeoutMillis: 2000,
 };
 
-console.log('Database connection config:', {
-    host: poolConfig.host,
-    port: poolConfig.port,
-    database: poolConfig.database,
-    user: poolConfig.user,
-    password: poolConfig.password ? '***' : '(not set)',
-    ssl: poolConfig.ssl,
-});
-
 const basePool = new Pool(poolConfig);
 
 const originalQuery = basePool.query.bind(basePool);

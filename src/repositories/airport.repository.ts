@@ -68,7 +68,7 @@ export class AirportRepository {
             return new Map();
         }
 
-        const values = pairs.map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`).join(', ');
+        const values = pairs.map((_, idx) => `($${idx * 2 + 1}::INTEGER, $${idx * 2 + 2}::INTEGER)`).join(', ');
         const params = pairs.flat();
 
         const result = await pool.query(

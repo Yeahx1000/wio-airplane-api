@@ -15,36 +15,45 @@ const client = new CognitoIdentityProviderClient({
     region: config.cognito.region,
 });
 
-const verifier = CognitoJwtVerifier.create({
+const accessTokenVerifier = CognitoJwtVerifier.create({
     userPoolId: config.cognito.userPoolId,
-    tokenUse: 'access',
+    tokenUse: "access",
     clientId: config.cognito.clientId,
 });
 
-export interface CognitoTokens {
+export type CognitoTokens = {
     accessToken: string;
     idToken: string;
     refreshToken: string;
 }
 
-export interface CognitoPayload {
+export type CognitoPayload = {
     sub: string;
     email?: string;
-    'cognito:username'?: string;
+    "cognito:username"?: string;
     token_use: string;
     exp: number;
     iat: number;
     [key: string]: unknown;
 }
 
-function createSecretHash(username: string): string {
-    if (!config.cognito.clientSecret) {
-        return '';
+class AuthError extends Error {
+    constructor(message = "Authentication failed") {
+        super(message);
+        this.name = "AuthError";
     }
-    const message = username + config.cognito.clientId;
-    const hmac = createHmac('sha256', config.cognito.clientSecret);
-    hmac.update(message);
-    return hmac.digest('base64');
+}
+
+function isEmail(value: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function createSecretHash(username: string): string | undefined {
+    const { clientId, clientSecret } = config.cognito;
+    if (!clientSecret) return undefined;
+
+    const message = username + clientId;
+    return createHmac("sha256", clientSecret).update(message).digest("base64");
 }
 
 async function findUsernameByEmail(email: string): Promise<string | null> {
@@ -56,92 +65,97 @@ async function findUsernameByEmail(email: string): Promise<string | null> {
         });
 
         const response = await client.send(command);
-
-        if (response.Users && response.Users.length > 0) {
-            return response.Users[0].Username || null;
-        }
-        return null;
-    } catch (error) {
-        console.error('Error looking up user by email:', error);
+        return response.Users?.[0]?.Username ?? null;
+    } catch {
         return null;
     }
 }
 
-export async function login(usernameOrEmail: string, password: string): Promise<CognitoTokens> {
-    let username = usernameOrEmail;
+async function resolveUsername(usernameOrEmail: string): Promise<string> {
+    if (!isEmail(usernameOrEmail)) return usernameOrEmail;
 
-    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(usernameOrEmail);
-    if (isEmail) {
-        const foundUsername = await findUsernameByEmail(usernameOrEmail);
-        if (foundUsername) {
-            username = foundUsername;
-        }
-    }
+    const found = await findUsernameByEmail(usernameOrEmail);
+
+    return found ?? usernameOrEmail;
+}
+
+function assertAuthResult(
+    result: { AccessToken?: string; IdToken?: string; RefreshToken?: string } | undefined,
+    requireRefreshToken: boolean
+) {
+    if (!result?.AccessToken || !result?.IdToken) throw new AuthError();
+    if (requireRefreshToken && !result.RefreshToken) throw new AuthError();
+}
+
+export async function login(usernameOrEmail: string, password: string): Promise<CognitoTokens> {
+    const username = await resolveUsername(usernameOrEmail);
 
     const authParams: Record<string, string> = {
         USERNAME: username,
         PASSWORD: password,
     };
 
-    if (config.cognito.clientSecret) {
-        authParams.SECRET_HASH = createSecretHash(username);
+    const secretHash = createSecretHash(username);
+    if (secretHash) authParams.SECRET_HASH = secretHash;
+
+    try {
+        const command = new InitiateAuthCommand({
+            AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
+            ClientId: config.cognito.clientId,
+            AuthParameters: authParams,
+        });
+
+        const response = await client.send(command);
+        assertAuthResult(response.AuthenticationResult, true);
+
+        return {
+            accessToken: response.AuthenticationResult!.AccessToken!,
+            idToken: response.AuthenticationResult!.IdToken!,
+            refreshToken: response.AuthenticationResult!.RefreshToken!,
+        };
+    } catch {
+        throw new AuthError();
     }
-
-    const command = new InitiateAuthCommand({
-        AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
-        ClientId: config.cognito.clientId,
-        AuthParameters: authParams,
-    });
-
-    const response = await client.send(command);
-
-    if (!response.AuthenticationResult) {
-        throw new Error('Authentication failed');
-    }
-
-    return {
-        accessToken: response.AuthenticationResult.AccessToken!,
-        idToken: response.AuthenticationResult.IdToken!,
-        refreshToken: response.AuthenticationResult.RefreshToken!,
-    };
 }
 
-export async function refreshAccessToken(refreshToken: string): Promise<Omit<CognitoTokens, 'refreshToken'>> {
+export async function refreshAccessToken(
+    usernameOrEmail: string,
+    refreshToken: string
+): Promise<Omit<CognitoTokens, "refreshToken">> {
+    const username = await resolveUsername(usernameOrEmail);
+
     const authParams: Record<string, string> = {
         REFRESH_TOKEN: refreshToken,
     };
 
-    if (config.cognito.clientSecret) {
-        authParams.SECRET_HASH = createSecretHash(config.cognito.clientId);
+    const secretHash = createSecretHash(username);
+    if (secretHash) authParams.SECRET_HASH = secretHash;
+
+    try {
+        const command = new InitiateAuthCommand({
+            AuthFlow: AuthFlowType.REFRESH_TOKEN_AUTH,
+            ClientId: config.cognito.clientId,
+            AuthParameters: authParams,
+        });
+
+        const response = await client.send(command);
+        assertAuthResult(response.AuthenticationResult, false);
+
+        return {
+            accessToken: response.AuthenticationResult!.AccessToken!,
+            idToken: response.AuthenticationResult!.IdToken!,
+        };
+    } catch {
+        throw new AuthError("Token refresh failed");
     }
-
-    const command = new InitiateAuthCommand({
-        AuthFlow: AuthFlowType.REFRESH_TOKEN_AUTH,
-        ClientId: config.cognito.clientId,
-        AuthParameters: authParams,
-    });
-
-    const response = await client.send(command);
-
-    if (!response.AuthenticationResult) {
-        throw new Error('Token refresh failed');
-    }
-
-    return {
-        accessToken: response.AuthenticationResult.AccessToken!,
-        idToken: response.AuthenticationResult.IdToken!,
-    };
 }
 
 export async function verifyToken(token: string): Promise<CognitoPayload> {
     try {
-        const payload = await verifier.verify(token);
+        const payload = await accessTokenVerifier.verify(token);
         return payload as unknown as CognitoPayload;
-    } catch (error) {
-        if (error instanceof Error) {
-            throw new Error(`Token verification failed: ${error.message}`);
-        }
-        throw new Error('Token verification failed');
+    } catch (err) {
+        const msg = err instanceof Error ? err.message : "unknown error";
+        throw new Error(`Token verification failed: ${msg}`);
     }
 }
-

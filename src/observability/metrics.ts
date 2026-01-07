@@ -1,6 +1,6 @@
 type MetricLabel = Record<string, string | number>;
 
-interface MetricValue {
+type MetricValue = {
     count: number;
     sum: number;
     min: number;

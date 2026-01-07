@@ -4,27 +4,27 @@ import { RouteService } from '../../services/route.service.js';
 import { AppError } from '../../errors/app-error.js';
 import { ErrorCodes } from '../../errors/error-codes.js';
 
-interface AirportByIdParams {
+type AirportByIdParams = {
     id: number;
 }
 
-interface RadiusQuery {
+type RadiusQuery = {
     lat: number;
     lon: number;
     radius: number;
 }
 
-interface DistanceQuery {
+type DistanceQuery = {
     id1: number;
     id2: number;
 }
 
-interface CountryComparisonQuery {
+type CountryComparisonQuery = {
     country1: string;
     country2: string;
 }
 
-interface RouteQuery {
+type RouteQuery = {
     fromId: number;
     toId: number;
 }
