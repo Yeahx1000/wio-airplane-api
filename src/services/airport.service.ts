@@ -13,9 +13,7 @@ const CACHE_TTL = {
 };
 
 export class AirportService {
-    constructor(
-        private readonly repository: AirportRepository
-    ) { }
+    constructor(private readonly repository: AirportRepository) { }
 
     private async getOrSetCache<T>(
         cacheKey: string,
@@ -24,16 +22,20 @@ export class AirportService {
         allowNull = false
     ): Promise<T | null> {
         const cached = await redisClient.getJSON<T>(cacheKey);
-        if (cached) {
+
+        if (cached !== null) {
             recordCacheHit(cacheKey);
             return cached;
         }
 
         recordCacheMiss(cacheKey);
+
         const result = await fetchFn();
+
         if (result !== null || allowNull) {
             await redisClient.setJSON(cacheKey, result, ttl);
         }
+
         return result;
     }
 
@@ -52,7 +54,7 @@ export class AirportService {
             CACHE_TTL.AIRPORTS_IN_RADIUS,
             true
         );
-        return result || [];
+        return result ?? [];
     }
 
     async findDistance(id1: number, id2: number): Promise<number | null> {
@@ -70,11 +72,11 @@ export class AirportService {
             CACHE_TTL.AIRPORTS_BY_COUNTRY,
             true
         );
-        return result || [];
+        return result ?? [];
     }
 
     async findAll(): Promise<Airport[]> {
-        return await this.repository.findAll();
+        return this.repository.findAll();
     }
 
     async findCountryComparison(country1: string, country2: string): Promise<CountryComparison | null> {

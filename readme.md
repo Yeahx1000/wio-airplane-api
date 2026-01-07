@@ -20,8 +20,6 @@ An API that returns airports within a given radius of a specific coordinate.
     - [`GET /metrics`](#get-metrics)
   - [Auth Endpoints](#auth-endpoints)
     - [`POST /auth/login`](#post-authlogin)
-    - [`POST /auth/refresh`](#post-authrefresh)
-    - [`GET /auth/me`](#get-authme)
   - [Airport Enpoints](#airport-enpoints)
     - [`GET /airports/:id`](#get-airportsid)
     - [`GET /airports/radius`](#get-airportsradius)
@@ -305,7 +303,9 @@ Please ensure you've recieved a username and password from your admin.
 }
 ```
 
-#### `POST /auth/refresh`
+<!-- Commenting these out as they're not relevant for delivery, but they work -->
+
+<!-- #### `POST /auth/refresh`
 
 **Headers:**
 
@@ -328,9 +328,9 @@ Content-Type: application/json
   "accessToken": "eyJraWQiOiJ...",
   "idToken": "eyJraWQiOiJ..."
 }
-```
+``` -->
 
-#### `GET /auth/me`
+<!-- #### `GET /auth/me`
 
 **Headers:**
 
@@ -346,7 +346,7 @@ Authorization: Bearer <accessToken>
   "email": "user@example.com",
   "username": "johndoe"
 }
-```
+``` -->
 
 Take the access token returned from the login request and add it to the `Authorization` header of your requests.
 

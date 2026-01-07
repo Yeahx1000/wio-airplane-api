@@ -8,23 +8,23 @@ type AirportByIdParams = {
     id: number;
 }
 
-type RadiusQuery = {
+interface RadiusQuery {
     lat: number;
     lon: number;
     radius: number;
 }
 
-type DistanceQuery = {
+interface DistanceQuery {
     id1: number;
     id2: number;
 }
 
-type CountryComparisonQuery = {
+interface CountryComparisonQuery {
     country1: string;
     country2: string;
 }
 
-type RouteQuery = {
+interface RouteQuery {
     fromId: number;
     toId: number;
 }

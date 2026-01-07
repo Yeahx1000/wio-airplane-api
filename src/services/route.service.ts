@@ -15,23 +15,19 @@ const MAX_BFS_NODES = 10000;
 const NEIGHBOR_CACHE_TTL = 86400 * 30;
 const MAX_NEIGHBORS_PER_AIRPORT = 200;
 
+type Neighbor = { id: number; distance: number };
+
 export class RouteService {
-    constructor(
-        private readonly repository: AirportRepository
-    ) { }
+    constructor(private readonly repository: AirportRepository) { }
 
     async findRoute(fromId: number, toId: number): Promise<RouteResponse | null> {
         if (fromId === toId) {
-            return {
-                legs: [],
-                totalDistance: 0,
-                totalStops: 0,
-            };
+            return { legs: [], totalDistance: 0, totalStops: 0 };
         }
 
         const cacheKey = cacheKeys.route(fromId, toId);
         const cached = await redisClient.getJSON<RouteResponse>(cacheKey);
-        if (cached) {
+        if (cached !== null) {
             recordCacheHit(cacheKey);
             return cached;
         }
@@ -46,56 +42,59 @@ export class RouteService {
             MAX_BFS_NODES
         );
 
-        if (path.length === 0) {
-            return null;
-        }
+        if (path.length === 0) return null;
 
         const [distanceMap, airports] = await Promise.all([
             this.getDistancesForPath(path),
-            this.getAirportsForPath(path)
+            this.getAirportsForPath(path),
         ]);
 
-        const routeLegs = buildRoute(
-            path,
-            (from: number, to: number) => distanceMap.get(`${from}:${to}`) || 0
-        );
-        const airportMap = new Map(airports.map(a => [a.id, a]));
+        const routeLegs = buildRoute(path, (from: number, to: number) => {
+            const d = distanceMap.get(`${from}:${to}`);
+            if (d === undefined) {
+                throw new Error(`Missing distance for leg ${from}:${to}`);
+            }
+            return d;
+        });
 
-        const legs: RouteLeg[] = routeLegs.map(leg => ({
-            fromId: leg.fromId,
-            toId: leg.toId,
-            fromAirport: {
-                id: leg.fromId,
-                name: airportMap.get(leg.fromId)?.airportName || '',
-                city: airportMap.get(leg.fromId)?.city || '',
-                country: airportMap.get(leg.fromId)?.country || '',
-            },
-            toAirport: {
-                id: leg.toId,
-                name: airportMap.get(leg.toId)?.airportName || '',
-                city: airportMap.get(leg.toId)?.city || '',
-                country: airportMap.get(leg.toId)?.country || '',
-            },
-            distance: leg.distance,
-        }));
+        const airportMap = new Map<number, Airport>(airports.map((a) => [a.id, a]));
+
+        const legs: RouteLeg[] = routeLegs.map((leg) => {
+            const fromAirport = airportMap.get(leg.fromId);
+            const toAirport = airportMap.get(leg.toId);
+
+            return {
+                fromId: leg.fromId,
+                toId: leg.toId,
+                fromAirport: {
+                    id: leg.fromId,
+                    name: fromAirport?.airportName ?? "",
+                    city: fromAirport?.city ?? "",
+                    country: fromAirport?.country ?? "",
+                },
+                toAirport: {
+                    id: leg.toId,
+                    name: toAirport?.airportName ?? "",
+                    city: toAirport?.city ?? "",
+                    country: toAirport?.country ?? "",
+                },
+                distance: leg.distance,
+            };
+        });
 
         const totalDistance = legs.reduce((sum, leg) => sum + leg.distance, 0);
-        const totalStops = legs.length - 1;
+        const totalStops = Math.max(0, legs.length - 1);
 
-        const route: RouteResponse = {
-            legs,
-            totalDistance,
-            totalStops,
-        };
+        const route: RouteResponse = { legs, totalDistance, totalStops };
 
         await redisClient.setJSON(cacheKey, route, ROUTE_CACHE_TTL);
         return route;
     }
 
-    private async getNeighbors(id: number): Promise<Array<{ id: number; distance: number }>> {
+    private async getNeighbors(id: number): Promise<Neighbor[]> {
         const cacheKey = cacheKeys.neighbors(id);
-        const cached = await redisClient.getJSON<Array<{ id: number; distance: number }>>(cacheKey);
-        if (cached) {
+        const cached = await redisClient.getJSON<Neighbor[]>(cacheKey);
+        if (cached !== null) {
             recordCacheHit(cacheKey);
             return cached;
         }
@@ -103,9 +102,7 @@ export class RouteService {
         recordCacheMiss(cacheKey);
 
         const airport = await this.repository.findById(id);
-        if (!airport) {
-            return [];
-        }
+        if (!airport) return [];
 
         const airportsInRadius = await this.repository.findByRadius(
             airport.latitude,
@@ -114,11 +111,11 @@ export class RouteService {
             MAX_NEIGHBORS_PER_AIRPORT
         );
 
-        const neighbors = airportsInRadius
-            .filter(a => a.id !== id)
-            .map(a => ({
+        const neighbors: Neighbor[] = airportsInRadius
+            .filter((a) => a.id !== id)
+            .map((a) => ({
                 id: a.id,
-                distance: a.distance || 0,
+                distance: a.distance ?? 0,
             }));
 
         await redisClient.setJSON(cacheKey, neighbors, NEIGHBOR_CACHE_TTL);
@@ -126,26 +123,20 @@ export class RouteService {
     }
 
     private async getDistancesForPath(path: number[]): Promise<Map<string, number>> {
-        if (path.length < 2) {
-            return new Map();
-        }
+        if (path.length < 2) return new Map();
 
         const pairs: Array<[number, number]> = [];
         for (let i = 0; i < path.length - 1; i++) {
             pairs.push([path[i], path[i + 1]]);
         }
 
-        const distanceMap = await this.repository.findDistancesBatch(pairs);
-        return distanceMap;
+        return this.repository.findDistancesBatch(pairs);
     }
 
     private async getAirportsForPath(path: number[]): Promise<Airport[]> {
-        if (path.length === 0) {
-            return [];
-        }
+        if (path.length === 0) return [];
 
-        const promises = path.map(id => this.repository.findById(id));
-        const results = await Promise.all(promises);
+        const results = await Promise.all(path.map((id) => this.repository.findById(id)));
         return results.filter((a): a is Airport => a !== null);
     }
 }

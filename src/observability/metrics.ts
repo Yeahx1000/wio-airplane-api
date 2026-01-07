@@ -1,3 +1,5 @@
+// the route using this is commented out and unused, so this isn't necessary, leaving here as an option to add back in
+
 type MetricLabel = Record<string, string | number>;
 
 type MetricValue = {

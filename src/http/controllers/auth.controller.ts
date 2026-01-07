@@ -1,7 +1,7 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
-import { login, refreshAccessToken } from '../../auth/cognito.js';
-import { loginSchema, refreshTokenSchema } from '../../validation/auth.schemas.js';
-import { unauthorizedResponse } from '../utils/error-responses.js';
+import { FastifyRequest, FastifyReply } from "fastify";
+import { login, refreshAccessToken } from "../../auth/cognito.js";
+import { loginSchema, refreshTokenSchema } from "../../validation/auth.schemas.js";
+import { unauthorizedResponse } from "../utils/error-responses.js";
 
 export class AuthController {
     async login(req: FastifyRequest, res: FastifyReply) {
@@ -15,8 +15,8 @@ export class AuthController {
                 idToken: tokens.idToken,
             };
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Authentication failed';
-            return unauthorizedResponse(res, message);
+            req.log?.warn({ err: error }, "Auth login failed");
+            return unauthorizedResponse(res, "Invalid credentials");
         }
     }
 
@@ -24,27 +24,47 @@ export class AuthController {
         const body = refreshTokenSchema.parse(req.body);
 
         try {
-            const tokens = await refreshAccessToken(body.refreshToken);
+            const usernameOrEmail =
+                typeof (req as any).user?.["cognito:username"] === "string"
+                    ? (req as any).user["cognito:username"]
+                    : typeof (req as any).user?.email === "string"
+                        ? (req as any).user.email
+                        : typeof (req as any).user?.sub === "string"
+                            ? (req as any).user.sub
+                            : undefined;
+
+            if (!usernameOrEmail) {
+                return unauthorizedResponse(res, "Not authenticated");
+            }
+
+            const tokens = await refreshAccessToken(usernameOrEmail, body.refreshToken);
             return {
                 accessToken: tokens.accessToken,
                 idToken: tokens.idToken,
             };
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Token refresh failed';
-            return unauthorizedResponse(res, message);
+            req.log?.warn({ err: error }, "Auth refresh failed");
+            return unauthorizedResponse(res, "Invalid refresh token");
         }
     }
 
     async me(req: FastifyRequest, res: FastifyReply) {
-        if (!req.user) {
-            return unauthorizedResponse(res, 'Not authenticated');
+        const user = (req as any).user as
+            | {
+                sub: string;
+                email?: string;
+                "cognito:username"?: string;
+            }
+            | undefined;
+
+        if (!user) {
+            return unauthorizedResponse(res, "Not authenticated");
         }
 
         return {
-            userId: req.user.sub,
-            email: req.user.email || undefined,
-            username: req.user['cognito:username'] || undefined,
+            userId: user.sub,
+            email: user.email || undefined,
+            username: user["cognito:username"] || undefined,
         };
     }
 }
-

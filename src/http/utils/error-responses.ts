@@ -1,10 +1,8 @@
-import { FastifyReply } from 'fastify';
+import { FastifyReply } from "fastify";
 
-export const unauthorizedResponse = (res: FastifyReply, message: string) => {
-    res.code(401);
-    return {
-        error: 'Unauthorized',
+export const unauthorizedResponse = (res: FastifyReply, message: string): void => {
+    res.status(401).send({
+        error: "Unauthorized",
         message,
-    };
+    });
 };
-
