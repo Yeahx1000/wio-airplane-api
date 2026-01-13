@@ -7,6 +7,7 @@ import {
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { createHmac } from 'crypto';
 import { config } from '../config/env.js';
+import { z } from 'zod';
 
 // AWS Cognito Identity Provider Client
 // this is the client for interacting with the Cognito User Pool (for auth, login, refresh, etc.)
@@ -45,7 +46,7 @@ class AuthError extends Error {
 }
 
 function isEmail(value: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    return z.email().safeParse(value).success;
 }
 
 function createSecretHash(username: string): string | undefined {
