@@ -50,11 +50,11 @@ export class RouteService {
         ]);
 
         const routeLegs = buildRoute(path, (from: number, to: number) => {
-            const d = distanceMap.get(`${from}:${to}`);
-            if (d === undefined) {
+            const distance = distanceMap.get(`${from}:${to}`);
+            if (distance === undefined) {
                 throw new Error(`Missing distance for leg ${from}:${to}`);
             }
-            return d;
+            return distance;
         });
 
         const airportMap = new Map<number, Airport>(airports.map((a) => [a.id, a]));
@@ -112,10 +112,10 @@ export class RouteService {
         );
 
         const neighbors: Neighbor[] = airportsInRadius
-            .filter((a) => a.id !== id)
-            .map((a) => ({
-                id: a.id,
-                distance: a.distance ?? 0,
+            .filter((airport) => airport.id !== id)
+            .map((airport) => ({
+                id: airport.id,
+                distance: airport.distance ?? 0,
             }));
 
         await redisClient.setJSON(cacheKey, neighbors, NEIGHBOR_CACHE_TTL);

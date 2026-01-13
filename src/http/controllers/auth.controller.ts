@@ -24,14 +24,15 @@ export class AuthController {
         const body = refreshTokenSchema.parse(req.body);
 
         try {
-            const usernameOrEmail =
-                typeof (req as any).user?.["cognito:username"] === "string"
-                    ? (req as any).user["cognito:username"]
-                    : typeof (req as any).user?.email === "string"
-                        ? (req as any).user.email
-                        : typeof (req as any).user?.sub === "string"
-                            ? (req as any).user.sub
-                            : undefined;
+            let usernameOrEmail: string | undefined;
+
+            if (typeof (req as any).user?.["cognito:username"] === "string") {
+                usernameOrEmail = (req as any).user["cognito:username"];
+            } else if (typeof (req as any).user?.email === "string") {
+                usernameOrEmail = (req as any).user.email;
+            } else if (typeof (req as any).user?.sub === "string") {
+                usernameOrEmail = (req as any).user.sub;
+            }
 
             if (!usernameOrEmail) {
                 return unauthorizedResponse(res, "Not authenticated");

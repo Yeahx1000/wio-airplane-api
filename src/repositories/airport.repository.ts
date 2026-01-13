@@ -139,7 +139,7 @@ export class AirportRepository {
             FROM airports a1
             CROSS JOIN airports a2
             WHERE LOWER(a1.country) = LOWER($1)
-              AND LOWER(a2.country) = LOWER($2)
+            AND LOWER(a2.country) = LOWER($2)
             ORDER BY distance ASC
             LIMIT 1`,
             [country1, country2]
