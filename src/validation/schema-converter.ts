@@ -1,4 +1,6 @@
+// the following package was deprecated as of Nov 2025
 import { zodToJsonSchema } from 'zod-to-json-schema';
+// good from here 
 import { z } from 'zod';
 
 export const zodToFastifySchema = (schema: z.ZodTypeAny): Record<string, unknown> => {

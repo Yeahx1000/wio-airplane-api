@@ -13,9 +13,9 @@ export const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2
     Math.sin(differenceInLon / 2) *
     Math.sin(differenceInLon / 2);
 
-  const c = 2 * Math.atan2(Math.sqrt(haversineValue), Math.sqrt(1 - haversineValue));
+  const centralAngle = 2 * Math.atan2(Math.sqrt(haversineValue), Math.sqrt(1 - haversineValue));
 
-  return EARTH_RADIUS_KM * c;
+  return EARTH_RADIUS_KM * centralAngle;
 };
 
 const toRadians = (degrees: number): number => {

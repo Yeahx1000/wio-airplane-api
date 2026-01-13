@@ -3,13 +3,6 @@ import { redisClient } from '../../cache/index.js';
 import { cacheKeys } from '../../cache/keys.js';
 import { config } from '../../config/env.js';
 
-type RateLimitResult = {
-    allowed: boolean;
-    remaining: number;
-    reset: number;
-    limit: number;
-}
-
 function getClientIp(req: FastifyRequest): string {
     const forwarded = req.headers['x-forwarded-for'];
     if (typeof forwarded === 'string') {
@@ -20,48 +13,6 @@ function getClientIp(req: FastifyRequest): string {
 
 function getCurrentWindow(windowMs: number): number {
     return Math.floor(Date.now() / windowMs);
-}
-
-async function checkRateLimit(
-    key: string,
-    limit: number,
-    windowMs: number
-): Promise<RateLimitResult> {
-    const window = getCurrentWindow(windowMs);
-    const redisKey = `${key}:${window}`;
-    const reset = (window + 1) * windowMs;
-
-    try {
-        const client = redisClient.getClient();
-
-        if (client.status !== 'ready' && client.status !== 'connect') {
-            await redisClient.connect();
-        }
-
-        const current = await client.incr(redisKey);
-
-        if (current === 1) {
-            await client.pexpire(redisKey, windowMs);
-        }
-
-        const remaining = Math.max(0, limit - current);
-        const allowed = current <= limit;
-
-        return {
-            allowed,
-            remaining,
-            reset,
-            limit,
-        };
-    } catch (error) {
-        console.error('Rate limit Redis error:', error);
-        return {
-            allowed: true,
-            remaining: limit,
-            reset: Date.now() + windowMs,
-            limit,
-        };
-    }
 }
 
 const SKIP_PATHS = ['/health', '/docs', '/docs/json'];

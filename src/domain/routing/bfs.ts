@@ -2,49 +2,6 @@
 
 type Neighbor = { id: number; distance: number };
 
-export const findShortestPath = (
-  startId: number,
-  endId: number,
-  maxDistance: number,
-  getNeighbors: (id: number) => Neighbor[]
-): number[] => {
-  if (startId === endId) return [startId];
-
-  const queue: number[] = [startId];
-  let head = 0;
-
-  const visited = new Set<number>([startId]);
-  const parent = new Map<number, number>();
-
-  while (head < queue.length) {
-    const current = queue[head++];
-
-    if (current === endId) {
-      const path: number[] = [];
-      let node: number | undefined = endId;
-      while (node !== undefined) {
-        path.push(node);
-        node = parent.get(node);
-      }
-      path.reverse();
-      return path;
-    }
-
-    const neighbors = getNeighbors(current);
-    for (let i = 0; i < neighbors.length; i++) {
-      const n = neighbors[i];
-      if (n.distance > maxDistance) continue;
-      if (visited.has(n.id)) continue;
-
-      visited.add(n.id);
-      parent.set(n.id, current);
-      queue.push(n.id);
-    }
-  }
-
-  return [];
-};
-
 export const findShortestPathAsync = async (
   startId: number,
   endId: number,
