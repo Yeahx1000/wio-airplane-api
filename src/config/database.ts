@@ -1,8 +1,7 @@
 import { readFileSync } from 'fs';
 import { config } from './env.js';
-import { Pool, QueryResult } from 'pg';
+import { Pool } from 'pg';
 import { join } from 'path';
-import { recordDatabaseQuery } from '../observability/metrics.js';
 
 const poolConfig = {
     ...config.database,
@@ -15,27 +14,7 @@ const poolConfig = {
     connectionTimeoutMillis: 2000,
 };
 
-const basePool = new Pool(poolConfig);
-
-const originalQuery = basePool.query.bind(basePool);
-
-basePool.query = async function (queryText: any, values?: any[]): Promise<QueryResult> {
-    const startTime = Date.now();
-    const queryString = typeof queryText === 'string' ? queryText : queryText.text;
-
-    try {
-        const result = await originalQuery(queryText, values);
-        const duration = Date.now() - startTime;
-        recordDatabaseQuery(queryString, duration);
-        return result;
-    } catch (error) {
-        const duration = Date.now() - startTime;
-        recordDatabaseQuery(queryString, duration);
-        throw error;
-    }
-} as any;
-
-export const pool = basePool;
+export const pool = new Pool(poolConfig);
 
 pool.on('error', (err) => {
     console.error('Unexpected error on idle database client', err);

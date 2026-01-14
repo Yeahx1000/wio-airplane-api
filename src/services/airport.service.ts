@@ -2,7 +2,6 @@ import { AirportRepository } from '../repositories/airport.repository.js';
 import { redisClient } from '../cache/index.js';
 import { cacheKeys } from '../cache/keys.js';
 import { Airport, AirportWithDistance, CountryComparison } from '../models/airport.model.js';
-import { recordCacheHit, recordCacheMiss } from '../observability/metrics.js';
 
 const CACHE_TTL = {
     AIRPORT: 3600,
@@ -24,11 +23,8 @@ export class AirportService {
         const cached = await redisClient.getJSON<T>(cacheKey);
 
         if (cached !== null) {
-            recordCacheHit(cacheKey);
             return cached;
         }
-
-        recordCacheMiss(cacheKey);
 
         const result = await fetchFn();
 

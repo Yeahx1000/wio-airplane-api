@@ -6,7 +6,6 @@ import { buildRoute } from '../domain/routing/path-builder.js';
 import { milesToKilometers } from '../domain/geo/units.js';
 import { RouteResponse, RouteLeg } from '../models/route.model.js';
 import { Airport } from '../models/airport.model.js';
-import { recordCacheHit, recordCacheMiss } from '../observability/metrics.js';
 
 const MAX_LEG_DISTANCE_MILES = 500;
 const MAX_LEG_DISTANCE_KM = milesToKilometers(MAX_LEG_DISTANCE_MILES);
@@ -28,11 +27,9 @@ export class RouteService {
         const cacheKey = cacheKeys.route(fromId, toId);
         const cached = await redisClient.getJSON<RouteResponse>(cacheKey);
         if (cached !== null) {
-            recordCacheHit(cacheKey);
             return cached;
         }
 
-        recordCacheMiss(cacheKey);
 
         const path = await findShortestPathAsync(
             fromId,
@@ -95,11 +92,9 @@ export class RouteService {
         const cacheKey = cacheKeys.neighbors(id);
         const cached = await redisClient.getJSON<Neighbor[]>(cacheKey);
         if (cached !== null) {
-            recordCacheHit(cacheKey);
             return cached;
         }
 
-        recordCacheMiss(cacheKey);
 
         const airport = await this.repository.findById(id);
         if (!airport) return [];
@@ -113,9 +108,9 @@ export class RouteService {
 
         const neighbors: Neighbor[] = airportsInRadius
             .filter((airport) => airport.id !== id)
-            .map((airport) => ({
-                id: airport.id,
-                distance: airport.distance ?? 0,
+            .map((a) => ({
+                id: a.id,
+                distance: a.distance ?? 0,
             }));
 
         await redisClient.setJSON(cacheKey, neighbors, NEIGHBOR_CACHE_TTL);
