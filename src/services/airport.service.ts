@@ -75,10 +75,6 @@ export class AirportService {
         return result ?? [];
     }
 
-    async findAll(): Promise<Airport[]> {
-        return this.repository.findAll();
-    }
-
     async findCountryComparison(country1: string, country2: string): Promise<CountryComparison | null> {
         return this.getOrSetCache(
             cacheKeys.countryComparison(country1, country2),

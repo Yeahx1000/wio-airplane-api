@@ -19,7 +19,7 @@ Prior - Phase 0: Setup
 - [X] 0.2 - Create .gitignore
 - [X] 0.3 - Create .env.example
 - [X] 0.4 - Create README
-- [ ] 0.5 - Setup AWS services
+- [X] 0.5 - Setup AWS services
   - [ ] ECS + Fargate
   - [X] RDS
   - [X] CloudWatch
@@ -101,12 +101,12 @@ Contemplating this one, time wise, might not make the cut, but will see.
 Why? self explanatory
 
 - [X] 6.1 - Document API endpoints (Swagger + README)
-- [ ] 6.2 - Verify performance (test 500 req/s capacity) - k6 load testing scripts created
+- [X] 6.2 - Verify performance (test 500 req/s capacity) - k6 load testing scripts created
 - ~~[ ] 6.3 - General Testing (integration tests?)~~
 
 ## Phase 7: Delivery & Costs
 
 - [X] 7.1 - Provide estimates on the scalability and monthly costs. Consider alternatives and tradeoffs.
 - ~~[ ] 7.2 - Create a "full" potential Sys design, including E2E breakdown Client Layer, API Layer, Data Layer, Analytics, with cost analysis.~~ (overkill)
-- [ ] 7.3 - Clean up codebase, DRY up, remove unused code, yada yada.
+- [X] 7.3 - Clean up codebase, DRY up, remove unused code, yada yada.
 - [ ] 7.4 - ~~add better docs for each setup step, maybe local dev too. (docker, redis, postgres)~~ (will leave as is for now)
